@@ -5,8 +5,9 @@
 This project implements a **Conway’s Game of Life demoscene** on a Tiny Tapeout ASIC.  
 The design uses VGA output to visualize evolving patterns seeded with **University of Waterloo-themed pixel art** and optionally produces PWM audio output.  
 
-> 🙏 Thank you to [Tiny Tapeout](https://tinytapeout.com) for providing the framework that makes this project possible.
+>  Thank you to [Tiny Tapeout](https://tinytapeout.com) for providing the framework that makes this project possible and John Long as an instructor of the course 298A.
 
+# Author: Hoang Dang, Adam Spyridakis
 ---
 
 ## Project Outline
@@ -87,7 +88,6 @@ The design uses VGA output to visualize evolving patterns seeded with **Universi
 ## Resources
 
 - [Tiny Tapeout Docs](https://tinytapeout.com)  
-- [FAQ](https://tinytapeout.com/faq/)  
 - [Digital design lessons](https://tinytapeout.com/digital_design/)  
 - [Siliwiz – learn semiconductors](https://tinytapeout.com/siliwiz/)  
 - [Tiny Tapeout Discord](https://tinytapeout.com/discord)
@@ -105,5 +105,5 @@ The design uses VGA output to visualize evolving patterns seeded with **Universi
 
 ## Credits
 
-- **Contributors**: University of Waterloo ECE Project Team  
+- **Contributors**: Hoang Dang and Adam Spyridakis
 - **Framework**: Built on [Tiny Tapeout](https://tinytapeout.com)  
