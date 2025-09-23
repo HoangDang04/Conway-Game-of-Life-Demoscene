@@ -1,41 +1,109 @@
 ![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
 
-# Tiny Tapeout Verilog Project Template
+# Tiny Tapeout Demoscene – Conway’s Game of Life
 
-- [Read the documentation for project](docs/info.md)
+This project implements a **Conway’s Game of Life demoscene** on a Tiny Tapeout ASIC.  
+The design uses VGA output to visualize evolving patterns seeded with **University of Waterloo-themed pixel art** and optionally produces PWM audio output.  
 
-## What is Tiny Tapeout?
+> 🙏 Thank you to [Tiny Tapeout](https://tinytapeout.com) for providing the framework that makes this project possible.
 
-Tiny Tapeout is an educational project that aims to make it easier and cheaper than ever to get your digital and analog designs manufactured on a real chip.
+---
 
-To learn more and get started, visit https://tinytapeout.com.
+## Project Outline
 
-## Set up your Verilog project
+- **Concept**: A cellular automaton where each cell has two states: alive or dead.  
+- **Rules**:
+  - Alive cell with **2 or 3 neighbors → stays alive**  
+  - Alive cell with **0–1 or 4–8 neighbors → dies**  
+  - Dead cell with **3 neighbors → becomes alive**  
+  - Dead cell with **0–2 or 4–8 neighbors → stays dead**  
+- **Cells**: Represented as groups of pixels.
+- **Initial State**:  
+  - Seeded with University of Waterloo pixel art.  
+  - Optionally display a University of Waterloo watermark in the corner.
+- **Output**:  
+  - VGA for visuals.  
+  - PWM audio (optional) for sound generation.  
+- **Testing**: Tiny Tapeout provides an emulator to validate designs before fabrication.
 
-1. Add your Verilog files to the `src` folder.
-2. Edit the [info.yaml](info.yaml) and update information about your project, paying special attention to the `source_files` and `top_module` properties. If you are upgrading an existing Tiny Tapeout project, check out our [online info.yaml migration tool](https://tinytapeout.github.io/tt-yaml-upgrade-tool/).
-3. Edit [docs/info.md](docs/info.md) and add a description of your project.
-4. Adapt the testbench to your design. See [test/README.md](test/README.md) for more information.
+---
 
-The GitHub action will automatically build the ASIC files using [OpenLane](https://www.zerotoasiccourse.com/terminology/openlane/).
+## Input/Output Mapping
 
-## Enable GitHub actions to build the results page
+| Pin # | Direction | Function      |
+|-------|-----------|---------------|
+| 0     | Input     | Run (start/stop) |
+| 1     | Input     | First_state (seed image) |
+| 2     | Output    | B1 |
+| 3     | Output    | VS (Vertical Sync) |
+| 4     | Output    | R0 |
+| 5     | Output    | G0 |
+| 6     | Output    | B0 |
+| 7     | Output    | HS (Horizontal Sync) |
+| –     | Output    | Audio (PWM) |
 
-- [Enabling GitHub Pages](https://tinytapeout.com/faq/#my-github-action-is-failing-on-the-pages-part)
+### VGA Pinout
+- **R0, R1**: Red output (MSB/LSB)  
+- **G0, G1**: Green output (MSB/LSB)  
+- **B0, B1**: Blue output (MSB/LSB)  
+- **VS**: Vertical Sync  
+- **HS**: Horizontal Sync  
+
+[VGA reference](https://github.com/mole99/tiny-vga)
+
+### Audio Pinout
+- **PWM audio output**: generates square wave frequencies mapped to notes.  
+
+[Audio reference](https://github.com/MichaelBell/tt-audio-pmod)
+
+---
+
+## Verilog Module Outline
+
+### 1. Horizontal/Vertical Sync Generation Module
+- Generates HS and VS signals for VGA.  
+- Keeps track of active pixel position.  
+- Suppresses pixel data output during sync periods.
+
+### 2. Pixel Generation Module
+- Generates RGB output for each pixel.  
+- Responsibilities:
+  - Seed initial University of Waterloo pixel art.  
+  - Calculate next state of each cell using Conway’s Game of Life rules.
+
+### 3. Audio Signal Generation Module
+- Maps digital values to audio frequencies.  
+- Outputs PWM square waves corresponding to notes.  
+
+---
+
+## System Diagram
+
+![ECE 298A System Diagram Draft 1](https://github.com/user-attachments/assets/f6adea51-e030-44c0-975e-9038281023b4)
+
+
+---
 
 ## Resources
 
-- [FAQ](https://tinytapeout.com/faq/)
-- [Digital design lessons](https://tinytapeout.com/digital_design/)
-- [Learn how semiconductors work](https://tinytapeout.com/siliwiz/)
-- [Join the community](https://tinytapeout.com/discord)
-- [Build your design locally](https://www.tinytapeout.com/guides/local-hardening/)
+- [Tiny Tapeout Docs](https://tinytapeout.com)  
+- [FAQ](https://tinytapeout.com/faq/)  
+- [Digital design lessons](https://tinytapeout.com/digital_design/)  
+- [Siliwiz – learn semiconductors](https://tinytapeout.com/siliwiz/)  
+- [Tiny Tapeout Discord](https://tinytapeout.com/discord)
 
-## What next?
+---
 
-- [Submit your design to the next shuttle](https://app.tinytapeout.com/).
-- Edit [this README](README.md) and explain your design, how it works, and how to test it.
-- Share your project on your social network of choice:
-  - LinkedIn [#tinytapeout](https://www.linkedin.com/search/results/content/?keywords=%23tinytapeout) [@TinyTapeout](https://www.linkedin.com/company/100708654/)
-  - Mastodon [#tinytapeout](https://chaos.social/tags/tinytapeout) [@matthewvenn](https://chaos.social/@matthewvenn)
-  - X (formerly Twitter) [#tinytapeout](https://twitter.com/hashtag/tinytapeout) [@tinytapeout](https://twitter.com/tinytapeout)
+## Next Steps
+
+- Implement Verilog modules and add to `src/`.  
+- Update [`info.yaml`](info.yaml) with correct top module and source files.  
+- Run simulations with the Tiny Tapeout testbench.  
+- Share results with the community under **#tinytapeout**.  
+
+---
+
+## Credits
+
+- **Contributors**: University of Waterloo ECE Project Team  
+- **Framework**: Built on [Tiny Tapeout](https://tinytapeout.com)  
