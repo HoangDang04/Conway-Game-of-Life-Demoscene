@@ -1,6 +1,6 @@
 # Tiny Tapeout project information
 project:
-  title:        "Conway's Game of Life Demoscene"      # Project title
+  title:        "Demoscene: Game of Life"      # Project title
   author:       "Hoang Dang" "Adam Spyridakis"      # Your name
   discord:      "_skill.04_"      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
   description:  "Demoscene of the game of life"      # One line description of what your project does
