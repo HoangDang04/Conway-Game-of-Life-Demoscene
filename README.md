@@ -9,7 +9,54 @@ The design uses VGA output to visualize evolving patterns seeded with **Universi
 
 # Author: Hoang Dang, Adam Spyridakis
 ---
+## Clock Speed
 
+The clock speed depends on the TinyVGA specifications, which specify a **pixel request frequency of 25.175 MHz**.
+
+This frequency can be derived from the VGA timing parameters as follows:
+
+### Horizontal Parameters
+
+| Parameter               | Value (pixels) |
+|--------------------------|----------------|
+| Horizontal visible area  | 640            |
+| Horizontal front porch   | 16             |
+| Horizontal sync pulse    | 96             |
+| Horizontal back porch    | 48             |
+| **Horizontal total**     | **800**        |
+
+All horizontal parameters are measured in pixel values. Although not all represent actual pixels, they indicate timing intervals relative to how many pixels can be processed during each period.
+
+### Vertical Parameters
+
+| Parameter               | Value (lines) |
+|--------------------------|---------------|
+| Vertical visible area    | 480           |
+| Vertical front porch     | 10            |
+| Vertical sync pulse      | 2             |
+| Vertical back porch      | 33            |
+| **Vertical total**       | **525**       |
+
+Vertical parameters are measured in lines, representing timing intervals for how many horizontal lines can be processed in the same duration.
+
+### Calculation
+
+1. **Total pixels per frame**
+
+800 * 525 = 420000
+
+
+2. **Pixel generation frequency**
+
+800 × 525 = 420,000
+
+
+3. This calculated value closely matches the specified clock frequency:
+
+25.175 MHz
+
+Therefore, the VGA pixel clock frequency is approximately **25.175 MHz**.
+---
 ## Project Outline
 
 - **Concept**: A cellular automaton where each cell has two states: alive or dead.  
@@ -28,7 +75,6 @@ The design uses VGA output to visualize evolving patterns seeded with **Universi
 - **Testing**: Tiny Tapeout provides an emulator to validate designs before fabrication.
 
 ---
-
 ## Input/Output Mapping
 
 | Pin # | Direction | Function      |
