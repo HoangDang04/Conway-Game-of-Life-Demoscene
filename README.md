@@ -54,8 +54,8 @@ Vertical parameters are measured in lines, representing timing intervals for how
 3. This calculated value closely matches the specified clock frequency:
 
 25.175 MHz
+- Therefore, the VGA pixel clock frequency is approximately **25.175 MHz**.
 
-Therefore, the VGA pixel clock frequency is approximately **25.175 MHz**.
 ---
 ## Project Outline
 
