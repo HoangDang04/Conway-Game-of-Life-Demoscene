@@ -7,7 +7,7 @@ module vga_sync (
     output reg [9:0] hpos, // horizontal total = 800, log2(800) = 9.64 so we need 10 bits.
     input wire clk,
     input wire reset
-    );
+);
 
     // Horizontal pixel parameters (pixel counting starts at 0)
     parameter HSyncBegin = 640 + 16; // Send a sync pulse after visible + front porch pixels.
