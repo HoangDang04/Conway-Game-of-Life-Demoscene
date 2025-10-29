@@ -57,7 +57,7 @@ module tt_um_example (
     localparam BACKGROUND_WIDTH = 640 - (CELL_SIZE * BOARD_WIDTH);    // how much left of width in the background
 
     reg curr_board [0:SIZE-1];
-    reg next_board [0:SIZE-1];
+    reg prev_board [0:SIZE-1];
 
     //==================OTHER WIRE REGISTERS=====================//                                        
     //Checking the region belongs to 640 x 480 board or not, boundary works as a boolean
@@ -97,125 +97,155 @@ module tt_um_example (
     assign G = G_reg;
     assign B = B_reg;
     
-//===================CONTROL LOGIC===========================//
-    localparam IDLE = 0, UPDATE = 1, COPY = 2;
-    reg [2:0] curr_action, next_action;
-    reg action_done, action_update, action_copy;
-    reg [31:0] timer, next_timer;
+    reg [5:0] frame_count;
+    reg [8:0] i;
 
-    always @(posedge clk) begin
-        curr_action <= next_action;
-        timer <= next_timer;
+    reg [3:0] neighbours;
+
+    reg [1:0] test;
+//======================= LOGIC ================================//
+always @(posedge vsync) begin
+        // set initial state
+    if (frame_count == 0 && test == 0) begin
+      // 
+      curr_board[3] <= 1;
+      curr_board[6] <= 1;
+      curr_board[19] <= 1;
+      curr_board[22] <= 1;
+      curr_board[35] <= 1;
+      curr_board[38] <= 1;
+      curr_board[52] <= 1;
+      curr_board[53] <= 1;
+
+      // W
+      curr_board[8] <= 1;
+      curr_board[12] <= 1;
+      curr_board[24] <= 1;
+      curr_board[28] <= 1;
+      curr_board[40] <= 1;
+      curr_board[42] <= 1;
+      curr_board[44] <= 1;
+      curr_board[57] <= 1;
+      curr_board[59] <= 1;
+
+      // E(1)
+      curr_board[82] <= 1;
+      curr_board[83] <= 1;
+      curr_board[84] <= 1;
+      curr_board[98] <= 1;
+      curr_board[114] <= 1;
+      curr_board[115] <= 1;
+      curr_board[130] <= 1;
+      curr_board[146] <= 1;
+      curr_board[147] <= 1;
+      curr_board[148] <= 1;
+
+      // C
+      curr_board[87] <= 1;
+      curr_board[88] <= 1;
+      curr_board[103] <= 1;
+      curr_board[119] <= 1;
+      curr_board[135] <= 1;
+      curr_board[151] <= 1;
+      curr_board[152] <= 1;
+
+      // E(2)
+      curr_board[91] <= 1;
+      curr_board[92] <= 1;
+      curr_board[93] <= 1;
+      curr_board[107] <= 1;
+      curr_board[123] <= 1;
+      curr_board[124] <= 1;
+      curr_board[139] <= 1;
+      curr_board[155] <= 1;
+      curr_board[156] <= 1;
+      curr_board[157] <= 1;
+
+      // 2
+      curr_board[176] <= 1;
+      curr_board[177] <= 1;
+      curr_board[178] <= 1;
+      curr_board[194] <= 1;
+      curr_board[208] <= 1;
+      curr_board[209] <= 1;
+      curr_board[210] <= 1;
+      curr_board[224] <= 1;
+      curr_board[240] <= 1;
+      curr_board[241] <= 1;
+      curr_board[242] <= 1;
+
+      // 9
+      curr_board[180] <= 1;
+      curr_board[181] <= 1;
+      curr_board[182] <= 1;
+      curr_board[196] <= 1;
+      curr_board[198] <= 1;
+      curr_board[212] <= 1;
+      curr_board[213] <= 1;
+      curr_board[214] <= 1;
+      curr_board[230] <= 1;
+      curr_board[246] <= 1;
+
+      // 8
+      curr_board[184] <= 1;
+      curr_board[185] <= 1;
+      curr_board[186] <= 1;
+      curr_board[200] <= 1;
+      curr_board[202] <= 1;
+      curr_board[216] <= 1;
+      curr_board[217] <= 1;
+      curr_board[218] <= 1;
+      curr_board[232] <= 1;
+      curr_board[234] <= 1;
+      curr_board[248] <= 1;
+      curr_board[249] <= 1;
+      curr_board[250] <= 1;
+
+      // A
+      curr_board[189] <= 1;
+      curr_board[190] <= 1;
+      curr_board[191] <= 1;
+      curr_board[205] <= 1;
+      curr_board[207] <= 1;
+      curr_board[221] <= 1;
+      curr_board[222] <= 1;
+      curr_board[223] <= 1;
+      curr_board[237] <= 1;
+      curr_board[239] <= 1;
+      curr_board[253] <= 1;
+      curr_board[255] <= 1;
+
+      test <= 1;
     end
 
-    always @* begin
-        next_action = curr_action;
-        next_timer = timer;
-
-        case (curr_action)
-            IDLE: begin
-                // when run still turns on then it works as normally
-                if (run) begin
-                    if (timer < interval) begin
-                        next_timer = timer + 1;
-                    // when it is finished then move to update
-                    end else if (vsync) begin
-                        next_timer = 0;
-                        next_action = UPDATE;
-                    end
-                end else begin
-                    next_timer = timer;
-                end
-            end
-            UPDATE: begin
-                if(action_update)
-                    next_action = COPY;
-            end
-            COPY: begin
-                if(action_copy)
-                    next_action = IDLE;
-            end
-            default: begin
-                next_action = IDLE;
-                timer = 0;
-            end
-        endcase
-    end
-                
-                    
-    //===================CELL FUNCTION UPDATE====================//
-    localparam HEIGHT_MASK = {HEIGHT{1'b1}};
-    localparam WIDTH_MASK = {WIDTH{1'b1}};
-
-    reg [WIDTH + HEIGHT - 1:0] three_by_three;
-    wire [WIDTH - 1:0] cell_x = three_by_three[WIDTH - 1:0];
-    wire [HEIGHT -1:0] cell_y = three_by_three[WIDTH + HEIGHT -1: WIDTH];
-
-    reg [3:0] neigh_index;
-    reg [3:0] num_neighbours;
-
-    localparam CELL_IDLE = 0, CELL_COUNT = 1, CELL_UPDATE = 2, CELL_DONE = 3;
-
-    reg[1:0] update_state;
-
-    always @(posedge clk) begin
-        case (update_state)
-            CELL_IDLE: begin
-                if (curr_action == UPDATE) begin
-                    three_by_three <= 0;
-                    neigh_index <= 0;
-                    num_neighbours <= 0;
-                    action_update <= 0;
-                    update_state <= CELL_COUNT;
-                end
-            end
-            // Count neghbours (one per clock)
-            CELL_COUNT: begin
-                reg [WIDTH - 1:0] neigh_x;
-                reg [HEIGHT - 1:0] neigh_y;
-
-                case (neigh_index)
-                    0: begin neigh_x = cell_x - 1; neigh_y = cell_y + 1; end
-                    1: begin neigh_x = cell_x + 0; neigh_y = cell_y + 1; end
-                    2: begin neigh_x = cell_x + 1; neigh_y = cell_y + 1; end
-                    3: begin neigh_x = cell_x - 1; neigh_y = cell_y + 0; end
-                    4: begin neigh_x = cell_x + 1; neigh_y = cell_y + 0; end
-                    5: begin neigh_x = cell_x - 1; neigh_y = cell_y - 1; end
-                    6: begin neigh_x = cell_x + 0; neigh_y = cell_y - 1; end
-                    7: begin neigh_x = cell_x + 1; neigh_y = cell_y - 1; end
-                endcase
-                // Check the state of the neighbour cell and add to count how many value of neighbours alive
-                num_neighbours <= num_neighbours + curr_board[{(neigh_x & WIDTH_MASK), (neigh_y & HEIGHT_MASK)}];
-                // When checking all neighbour cells, move into CELL_UPDATE
-                if(neigh_index == 7) begin
-                    neigh_index <= 0;
-                    update_state <= CELL_UPDATE;
-                end else begin
-                    neigh_index <= neigh_index + 1;
-                end
-            end
-            // Update current cell after counting all neighbours
-            CELL_UPDATE: begin
-                // The rule of this one is any live cell with two live cells with cell alives live, any 3 cells surrounding lives even it is alive or not
-                next_board[three_by_three] <= (curr_board[three_by_three] && (num_neighbours == 2)) || (num_neighbours == 3);
-                num_neighbours <= 0;
-                // Advance to next cell or finish all
-                if (three_by_three == SIZE - 1) begin
-                    action_update <= 1;
-                    update_state <= CELL_DONE;
-                end else begin
-                    three_by_three <= three_by_three + 1;
-                    update_state <= CELL_COUNT;
-                end
-            end
-            // Wait until control FSM changes action
-            CELL_DONE: begin
-                if(curr_action != UPDATE) begin
-                    action_update <= 0;
-                    update_state <= CELL_IDLE;
-                end
-            end
-        endcase
-    end
-  
+    if (frame_count == 60) begin
+      for (i = 0; i <= 255; i++) 
+        prev_board[i] = curr_board[i];
+      for (i = 0; i <= 255; i++) begin
+        neighbours = 0;
+        if (i > 15 && i % 16 != 0 && prev_board[i - 16 - 1] == 1)
+          neighbours = neighbours + 1;
+        if (i > 15 && prev_board[i - 16] == 1)
+          neighbours = neighbours + 1;
+        if (i > 15 && (i + 1) % 16 != 0 && prev_board[i - 16 + 1] == 1)
+          neighbours = neighbours + 1;
+        if (i % 16 != 0 && prev_board[i - 1] == 1)
+          neighbours = neighbours + 1;
+        if ((i + 1) % 16 != 0 && prev_board[i + 1] == 1)
+          neighbours = neighbours + 1;
+        if (i < 240 && i % 16 != 0 && prev_board[i + 16 - 1] == 1)
+          neighbours = neighbours + 1;
+        if (i < 240 && prev_board[i + 16] == 1)
+          neighbours = neighbours + 1;
+        if (i < 240 && (i + 1) % 16 != 0 && prev_board[i + 16 + 1] == 1)
+          neighbours = neighbours + 1;
+        if (neighbours == 2 || neighbours == 3)
+          curr_board[i] = 1;
+        else 
+         curr_board[i] = 0;
+      end
+      frame_count <= 0;
+    end else
+      frame_count <= frame_count + 1;
+  end
 endmodule
