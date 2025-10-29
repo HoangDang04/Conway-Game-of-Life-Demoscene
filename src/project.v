@@ -32,6 +32,21 @@ module tt_um_example (
   // Assign output based on tiny-vga pinout: https://github.com/mole99/tiny-vga
   assign uo_out = {hsync, blue[0], green[0], red[0], vsync, blue[1], green[1], red[1]};
 
+  localparam BitWidthTotal = 640;
+  localparam BitHeightTotal = 480;
+
+  localparam CellWidth = 16;
+  localparam CellHeight = 16;
+  localparam CellSize = 16*16 - 1;
+  localparam BitWidth = 24;
+  localparam BitHeight = 24;
+
+  localparam StartWidth = (BitWidthTotal - (BitWidth * CellWidth))/2;
+  localparam EndWidth = BitWidthTotal - StartWidth - 1;
+
+  localparam StartHeight = (BitHeightTotal - (BitHeight * CellHeight))/2;
+  localparam EndHeight = BitHeightTotal - StartHeight - 1;
+
   vga_synchronization vga_sync (
     .hsync(hsync),
     .vsync(vsync),
@@ -41,16 +56,16 @@ module tt_um_example (
     .reset(rst_n),
   );
 
-  reg current_state [0:255];
+  reg current_state [0:CellSize];
 
-  wire is_border = (vpos <= 47 || vpos >= 432 || hpos <= 127 || hpos >= 512) ? 1 : 0;
+  wire is_border = (hpos < StartWidth || hpos > EndWidth || vpos < StartHeight || vpos > EndHeight) ? 1 : 0;
 
-  wire not_visible = (hpos >= 640 || vpos >= 480) ? 1 : 0;
+  wire not_visible = (hpos >= BitWidthTotal || vpos >= BitHeightTotal) ? 1 : 0;
 
-  wire [3:0] cell_x = (hpos - 128) / 24;
-  wire [3:0] cell_y = (vpos - 48) / 24;
+  wire [3:0] cell_x = (hpos - StartWidth) / BitHeight;
+  wire [3:0] cell_y = (vpos - StartHeight) / BitWidth;
 
-  wire [7:0] cell_index = (cell_y * 16) + cell_x;
+  wire [7:0] cell_index = (cell_y * CellWidth) + cell_x;
 
   wire current_cell = current_state[cell_index];
 
