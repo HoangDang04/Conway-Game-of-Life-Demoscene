@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-    `default_nettype none
+`default_nettype none
 
 module tt_um_example (
     input  wire [7:0] ui_in,    // Dedicated inputs
@@ -19,7 +19,7 @@ module tt_um_example (
     wire hsync, vsync;
     wire [1:0] R, G, B;
     wire show_on_vga;
-    wire [9:0] row, column;
+    wire [9:0] hpos, vpos;
     
     // Start/ Stop simulations
     wire run;
@@ -32,75 +32,85 @@ module tt_um_example (
     assign uio_out = 0;
     assign uio_oe = 0;
 
+    wire _unused = &{ena, clk, rst_n, 1'b0};
+
     hvsync_generator hvsync_gen(
         .clk(clk),
         .reset(~rst_n),
         .hsync(hsync),
         .vsync(vsync),
         .display_on(show_on_vga),
-        .hpos(row),
-        .vpos(column)
+        .hpos(hpos),
+        .vpos(vpos)
     );
     // =============REGISTER SIZE OF THE BOARD=================//
     localparam CLOCK_FREQ = 24000000;
     localparam WIDTH = 4, HEIGHT = 4;
     localparam interval = CLOCK_FREQ / 10;
     
-    localparam WIDTH_BIT = 2 ** 4;
-    localparam HEIGHT_BIT = 2 ** 4;
-    localparam SIZE = WIDTH_BIT * HEIGHT_BIT;
+    localparam BOARD_WIDTH = 2 ** WIDTH;
+    localparam BOARD_HEIGHT = 2 ** HEIGHT;
+    localparam SIZE = BOARD_WIDTH * BOARD_HEIGHT;
     
     localparam CELL_SIZE = 24;
-    localparam BACKGROUND_HEIGHT = 640 - (CELL_SIZE * WIDTH_BIT);     // how much left of height in the background
-    localparam BACKGROUND_WIDTH = 480 - (CELL_SIZE * HEIGHT_BIT);    // how much left of width in the background
-    
+    localparam BACKGROUND_HEIGHT = 480 - (CELL_SIZE * BOARD_HEIGHT);     // how much left of height in the background
+    localparam BACKGROUND_WIDTH = 640 - (CELL_SIZE * BOARD_WIDTH);    // how much left of width in the background
+
     reg curr_board [0:SIZE-1];
     reg next_board [0:SIZE-1];
-    //==================OTHER WIRE REGISTERS=====================//
-    // Checking the region belongs to 640 x 480 board or not, boundary works as a boolean
-    wire boundary = (row < 640 - BACKGROUND_WIDTH/2) &&
-                    (row >= BACKGROUND_WIDTH/2) &&
-                    (column < 480 - BACKGROUND_HEIGHT/2) &&
-                    (column >= BACKGROUND_HEIGHT/2);
+
+    //==================OTHER WIRE REGISTERS=====================//                                        
+    //Checking the region belongs to 640 x 480 board or not, boundary works as a boolean
+    wire boundary = (hpos < 640 - BACKGROUND_WIDTH/2) &&
+                    (hpos >= BACKGROUND_WIDTH/2) &&
+                    (vpos < 480 - BACKGROUND_HEIGHT/2) &&
+                    (vpos >= BACKGROUND_HEIGHT/2);
 
     // Assign which cell this pixel belongs to
     wire [WIDTH - 1: 0] row_index;
     wire [HEIGHT - 1: 0] column_index;
-    assign row_index = (row - BACKGROUND_WIDTH/2) / CELL_SIZE;
-    assign column_index = (column - BACKGROUND_HEIGHT/2) / CELL_SIZE;
+    assign row_index = (hpos - BACKGROUND_WIDTH/2) / CELL_SIZE;
+    assign column_index = (vpos - BACKGROUND_HEIGHT/2) / CELL_SIZE;
     // Compute wheres the location of the cell in the board
-    wire [WIDTH + HEIGHT - 1: 0] location;
-    assign location = (column_index << WIDTH) + row_index;
+    wire [WIDTH + HEIGHT - 1: 0] location = (column_index * BOARD_WIDTH) + row_index;
     //Genrate RGB signals for the board
     reg [1:0] R_reg, G_reg, B_reg;
-    always @(*) begin
+    always @* begin
         // Default color
-        R_reg = 2'b00; G_reg = 2'b00; B_reg = 2'b00;
+        R_reg = 2'b10;
+        G_reg = 2'b01; 
+        B_reg = 2'b01;
         if (show_on_vga && boundary) begin
             if (curr_board[location] == 1'b1) begin
-                R_reg = 2'b11;
-                G_reg = 2'b11;
-                B_reg = 2'b11;
+                R_reg = 2'b00;
+                G_reg = 2'b00;
+                B_reg = 2'b00;
+            end
+            else begin
+              R_reg = 2'b10;
+              G_reg = 2'b10;
+              B_reg= 2'b10;
             end
         end
     end
     assign R = R_reg;
     assign G = G_reg;
     assign B = B_reg;
-    //===================CONTROL LOGIC===========================//
+    
+//===================CONTROL LOGIC===========================//
     localparam IDLE = 0, UPDATE = 1, COPY = 2;
     reg [2:0] curr_action, next_action;
     reg action_done, action_update, action_copy;
     reg [31:0] timer, next_timer;
 
     always @(posedge clk) begin
-        action <= next_action;
+        curr_action <= next_action;
         timer <= next_timer;
     end
 
     always @* begin
         next_action = curr_action;
-        next_timer = curr_timer;
+        next_timer = timer;
 
         case (curr_action)
             IDLE: begin
@@ -151,7 +161,7 @@ module tt_um_example (
     always @(posedge clk) begin
         case (update_state)
             CELL_IDLE: begin
-                if (action == UPDATE) begin
+                if (curr_action == UPDATE) begin
                     three_by_three <= 0;
                     neigh_index <= 0;
                     num_neighbours <= 0;
@@ -200,15 +210,12 @@ module tt_um_example (
             end
             // Wait until control FSM changes action
             CELL_DONE: begin
-                if(action != UPDATE) begin
+                if(curr_action != UPDATE) begin
                     action_update <= 0;
                     update_state <= CELL_IDLE;
                 end
             end
         endcase
     end
-    
-      // List all unused inputs to prevent warnings
-    wire _unused = &{ena, clk, rst_n, 1'b0};
-
+  
 endmodule
