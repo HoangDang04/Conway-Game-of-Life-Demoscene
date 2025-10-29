@@ -209,96 +209,22 @@ module tt_um_example (
         previous_state[i] = current_state[i];
       for (i = 0; i <= 255; i++) begin
         neighbours = 0;
-        if (i == 0) begin
-          if (previous_state[i + 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 16] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 16 + 1] == 1)
-            neighbours = neighbours + 1;
-        end else if (i == 15) begin
-          if (previous_state[i - 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 16 - 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 16] == 1)
-            neighbours = neighbours + 1;
-        end else if (i == 240) begin
-          if (previous_state[i - 16] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i - 16 + 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 1] == 1)
-            neighbours = neighbours + 1;
-        end else if (i == 255) begin
-          if (previous_state[i - 16 - 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i - 16] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i - 1] == 1)
-            neighbours = neighbours + 1;
-        end else if (i < 15) begin
-          if (previous_state[i - 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 16 - 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 16] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 16 + 1] == 1)
-            neighbours = neighbours + 1;
-        end else if (i > 240) begin
-          if (previous_state[i - 16 - 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i - 16] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i - 16 + 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i - 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 1] == 1)
-            neighbours = neighbours + 1;
-        end else if (i % 16 == 0) begin
-          if (previous_state[i - 16] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i - 16 + 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 16] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 16 + 1] == 1)
-            neighbours = neighbours + 1;
-        end else if ((i + 1) % 16 == 0) begin
-          if (previous_state[i - 16 - 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i - 16] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i - 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 16 - 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 16] == 1)
-            neighbours = neighbours + 1;
-        end else begin
-          if (previous_state[i - 16 - 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i - 16] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i - 16 + 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i - 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 16 - 1] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 16] == 1)
-            neighbours = neighbours + 1;
-          if (previous_state[i + 16 + 1] == 1)
-            neighbours = neighbours + 1;
-        end
+        if (i > 15 && i % 16 != 0 && previous_state[i - 16 - 1] == 1)
+          neighbours = neighbours + 1;
+        if (i > 15 && previous_state[i - 16] == 1)
+          neighbours = neighbours + 1;
+        if (i > 15 && (i + 1) % 16 != 0 && previous_state[i - 16 + 1] == 1)
+          neighbours = neighbours + 1;
+        if (i % 16 != 0 && previous_state[i - 1] == 1)
+          neighbours = neighbours + 1;
+        if ((i + 1) % 16 != 0 && previous_state[i + 1] == 1)
+          neighbours = neighbours + 1;
+        if (i < 240 && i % 16 != 0 && previous_state[i + 16 - 1] == 1)
+          neighbours = neighbours + 1;
+        if (i < 240 && previous_state[i + 16] == 1)
+          neighbours = neighbours + 1;
+        if (i < 240 && (i + 1) % 16 != 0 && previous_state[i + 16 + 1] == 1)
+          neighbours = neighbours + 1;
         if (neighbours == 2 || neighbours == 3)
           current_state[i] = 1;
         else 
