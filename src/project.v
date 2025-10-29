@@ -15,23 +15,78 @@ module tt_um_example (
     input  wire       clk,      // clock
     input  wire       rst_n     // reset_n - low to reset
 );
-
+    // VGA signals
+    wire hsync, vsync;
+    wire [1:0] R, G, B;
+    wire show_on_vga;
+    wire [9:0] row, column;
+    
     // Start/ Stop simulations
     wire run;
-    assign run = ui_in[0];
+    assign run = ui_in[0];    // This only works when you hit ui_in
 
-    
-    
+    // assign output
+    assign uo_out = {hsync, B[0], G[0], R[0], vsync, B[1], G[1], R[1]};
+
+    // Unused outputs assigned to 0
+    assign uio_out = 0;
+    assign uio_oe = 0;
+
+    hvsync_generator hvsync_gen(
+        .clk(clk),
+        .reset(~rst_n),
+        .hsync(hsync),
+        .vsync(vsync),
+        .display_on(show_on_vga),
+        .hpos(row),
+        .vpos(column)
+    );
     // =============REGISTER SIZE OF THE BOARD=================//
     localparam CLOCK_FREQ = 24000000;
     localparam WIDTH = 4, HEIGHT = 4;
     localparam interval = CLOCK_FREQ / 10;
+    
     localparam WIDTH_BIT = 2 ** 4;
     localparam HEIGHT_BIT = 2 ** 4;
     localparam SIZE = WIDTH_BIT * HEIGHT_BIT;
-
+    
+    localparam CELL_SIZE = 24;
+    localparam BACKGROUND_HEIGHT = 640 - (CELL_SIZE * WIDTH_BIT);     // how much left of height in the background
+    localparam BACKGROUND_WIDTH = 480 - (CELL_SIZE * HEIGHT_BIT);    // how much left of width in the background
+    
     reg curr_board [0:SIZE-1];
     reg next_board [0:SIZE-1];
+    //==================OTHER WIRE REGISTERS=====================//
+    // Checking the region belongs to 640 x 480 board or not, boundary works as a boolean
+    wire boundary = (row < 640 - BACKGROUND_WIDTH/2) &&
+                    (row >= BACKGROUND_WIDTH/2) &&
+                    (column < 480 - BACKGROUND_HEIGHT/2) &&
+                    (column >= BACKGROUND_HEIGHT/2);
+
+    // Assign which cell this pixel belongs to
+    wire [WIDTH - 1: 0] row_index;
+    wire [HEIGHT - 1: 0] column_index;
+    assign row_index = (row - BACKGROUND_WIDTH/2) / CELL_SIZE;
+    assign column_index = (column - BACKGROUND_HEIGHT/2) / CELL_SIZE;
+    // Compute wheres the location of the cell in the board
+    wire [WIDTH + HEIGHT - 1: 0] location;
+    assign location = (column_index << WIDTH) + row_index;
+    //Genrate RGB signals for the board
+    reg [1:0] R_reg, G_reg, B_reg;
+    always @(*) begin
+        // Default color
+        R_reg = 2'b00; G_reg = 2'b00; B_reg = 2'b00;
+        if (show_on_vga && boundary) begin
+            if (curr_board[location] == 1'b1) begin
+                R_reg = 2'b11;
+                G_reg = 2'b11;
+                B_reg = 2'b11;
+            end
+        end
+    end
+    assign R = R_reg;
+    assign G = G_reg;
+    assign B = B_reg;
     //===================CONTROL LOGIC===========================//
     localparam IDLE = 0, UPDATE = 1, COPY = 2;
     reg [2:0] curr_action, next_action;
@@ -40,7 +95,7 @@ module tt_um_example (
 
     always @(posedge clk) begin
         action <= next_action;
-        timer <= next_timer
+        timer <= next_timer;
     end
 
     always @* begin
@@ -52,14 +107,14 @@ module tt_um_example (
                 // when run still turns on then it works as normally
                 if (run) begin
                     if (timer < interval) begin
-                        next_timer = timer + 1:
+                        next_timer = timer + 1;
                     // when it is finished then move to update
                     end else if (vsync) begin
                         next_timer = 0;
                         next_action = UPDATE;
                     end
                 end else begin
-                    next_timer = timer
+                    next_timer = timer;
                 end
             end
             UPDATE: begin
@@ -71,7 +126,7 @@ module tt_um_example (
                     next_action = IDLE;
             end
             default: begin
-                next_action = IDLE
+                next_action = IDLE;
                 timer = 0;
             end
         endcase
@@ -83,8 +138,8 @@ module tt_um_example (
     localparam WIDTH_MASK = {WIDTH{1'b1}};
 
     reg [WIDTH + HEIGHT - 1:0] three_by_three;
-    wire [WIDTH - 1:0] x_cell = three_by_three[WIDTH - 1:0];
-    wire [HEIGHT -1:0] y_cell = three_by_three[WIDTH + HEIGHT -1: WIDTH];
+    wire [WIDTH - 1:0] cell_x = three_by_three[WIDTH - 1:0];
+    wire [HEIGHT -1:0] cell_y = three_by_three[WIDTH + HEIGHT -1: WIDTH];
 
     reg [3:0] neigh_index;
     reg [3:0] num_neighbours;
@@ -109,18 +164,18 @@ module tt_um_example (
                 reg [WIDTH - 1:0] neigh_x;
                 reg [HEIGHT - 1:0] neigh_y;
 
-                case (neight_index)
-                    0: begin neigh_x = cell_x - 1; neigh_y = neigh_y + 1; end
-                    1: begin neigh_x = cell_x + 0; neigh_y = neigh_y + 1; end
-                    2: begin neigh_x = cell_x + 1; neigh_y = neigh_y + 1; end
-                    3: begin neigh_x = cell_x - 1; neigh_y = neigh_y + 0; end
-                    4: begin neigh_x = cell_x + 1; neigh_y = neigh_y + 0; end
-                    5: begin neigh_x = cell_x - 1; neigh_y = neigh_y - 1; end
-                    6: begin neigh_x = cell_x + 0; neigh_y = neigh_y + 1; end
-                    7: begin neigh_x = cell_x + 1; neigh_y = neigh_y + 1; end
+                case (neigh_index)
+                    0: begin neigh_x = cell_x - 1; neigh_y = cell_y + 1; end
+                    1: begin neigh_x = cell_x + 0; neigh_y = cell_y + 1; end
+                    2: begin neigh_x = cell_x + 1; neigh_y = cell_y + 1; end
+                    3: begin neigh_x = cell_x - 1; neigh_y = cell_y + 0; end
+                    4: begin neigh_x = cell_x + 1; neigh_y = cell_y + 0; end
+                    5: begin neigh_x = cell_x - 1; neigh_y = cell_y - 1; end
+                    6: begin neigh_x = cell_x + 0; neigh_y = cell_y - 1; end
+                    7: begin neigh_x = cell_x + 1; neigh_y = cell_y - 1; end
                 endcase
                 // Check the state of the neighbour cell and add to count how many value of neighbours alive
-                num_neighbours <= num_neighbours + curr_board[{(neigh_x & HEIGHT_MASK), (neigh_y & WIDTH_MASK)}];
+                num_neighbours <= num_neighbours + curr_board[{(neigh_x & WIDTH_MASK), (neigh_y & HEIGHT_MASK)}];
                 // When checking all neighbour cells, move into CELL_UPDATE
                 if(neigh_index == 7) begin
                     neigh_index <= 0;
@@ -132,8 +187,8 @@ module tt_um_example (
             // Update current cell after counting all neighbours
             CELL_UPDATE: begin
                 // The rule of this one is any live cell with two live cells with cell alives live, any 3 cells surrounding lives even it is alive or not
-                next_board[three_by_three] <= (next_board[three_by_three] && (num_neighbours == 2)) || (num_neighbours == 3);
-                num_neighbours <+ 0;
+                next_board[three_by_three] <= (curr_board[three_by_three] && (num_neighbours == 2)) || (num_neighbours == 3);
+                num_neighbours <= 0;
                 // Advance to next cell or finish all
                 if (three_by_three == SIZE - 1) begin
                     action_update <= 1;
@@ -147,7 +202,7 @@ module tt_um_example (
             CELL_DONE: begin
                 if(action != UPDATE) begin
                     action_update <= 0;
-                    update_state <= IDLE;
+                    update_state <= CELL_IDLE;
                 end
             end
         endcase
