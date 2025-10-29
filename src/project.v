@@ -93,8 +93,114 @@ module tt_um_example (
   always @(posedge vsync) begin
     // set initial state
     if (frame_count == 0 && test == 0) begin
-      current_state[0] <= 1;
-      current_state[1] <= 1;
+      // U
+      current_state[3] <= 1;
+      current_state[6] <= 1;
+      current_state[19] <= 1;
+      current_state[22] <= 1;
+      current_state[35] <= 1;
+      current_state[38] <= 1;
+      current_state[52] <= 1;
+      current_state[53] <= 1;
+
+      // W
+      current_state[8] <= 1;
+      current_state[12] <= 1;
+      current_state[24] <= 1;
+      current_state[28] <= 1;
+      current_state[40] <= 1;
+      current_state[42] <= 1;
+      current_state[44] <= 1;
+      current_state[57] <= 1;
+      current_state[59] <= 1;
+
+      // E(1)
+      current_state[82] <= 1;
+      current_state[83] <= 1;
+      current_state[84] <= 1;
+      current_state[98] <= 1;
+      current_state[114] <= 1;
+      current_state[115] <= 1;
+      current_state[130] <= 1;
+      current_state[146] <= 1;
+      current_state[147] <= 1;
+      current_state[148] <= 1;
+
+      // C
+      current_state[87] <= 1;
+      current_state[88] <= 1;
+      current_state[103] <= 1;
+      current_state[119] <= 1;
+      current_state[135] <= 1;
+      current_state[151] <= 1;
+      current_state[152] <= 1;
+
+      // E(2)
+      current_state[91] <= 1;
+      current_state[92] <= 1;
+      current_state[93] <= 1;
+      current_state[107] <= 1;
+      current_state[123] <= 1;
+      current_state[124] <= 1;
+      current_state[139] <= 1;
+      current_state[155] <= 1;
+      current_state[156] <= 1;
+      current_state[157] <= 1;
+
+      // 2
+      current_state[176] <= 1;
+      current_state[177] <= 1;
+      current_state[178] <= 1;
+      current_state[194] <= 1;
+      current_state[208] <= 1;
+      current_state[209] <= 1;
+      current_state[210] <= 1;
+      current_state[224] <= 1;
+      current_state[240] <= 1;
+      current_state[241] <= 1;
+      current_state[242] <= 1;
+
+      // 9
+      current_state[180] <= 1;
+      current_state[181] <= 1;
+      current_state[182] <= 1;
+      current_state[196] <= 1;
+      current_state[198] <= 1;
+      current_state[212] <= 1;
+      current_state[213] <= 1;
+      current_state[214] <= 1;
+      current_state[230] <= 1;
+      current_state[246] <= 1;
+
+      // 8
+      current_state[184] <= 1;
+      current_state[185] <= 1;
+      current_state[186] <= 1;
+      current_state[200] <= 1;
+      current_state[202] <= 1;
+      current_state[216] <= 1;
+      current_state[217] <= 1;
+      current_state[218] <= 1;
+      current_state[232] <= 1;
+      current_state[234] <= 1;
+      current_state[248] <= 1;
+      current_state[249] <= 1;
+      current_state[250] <= 1;
+
+      // A
+      current_state[189] <= 1;
+      current_state[190] <= 1;
+      current_state[191] <= 1;
+      current_state[205] <= 1;
+      current_state[207] <= 1;
+      current_state[221] <= 1;
+      current_state[222] <= 1;
+      current_state[223] <= 1;
+      current_state[237] <= 1;
+      current_state[239] <= 1;
+      current_state[253] <= 1;
+      current_state[255] <= 1;
+
       test <= 1;
     end
 
@@ -202,7 +308,7 @@ module tt_um_example (
     end else
       frame_count <= frame_count + 1;
   end
-  
+
   // List all unused inputs to prevent warnings
   wire _unused = &{ena, clk, rst_n, 1'b0};
 
