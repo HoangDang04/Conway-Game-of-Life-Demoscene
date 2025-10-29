@@ -65,7 +65,7 @@ module tt_um_example (
                     (hpos >= BACKGROUND_WIDTH/2) &&
                     (vpos < 480 - BACKGROUND_HEIGHT/2) &&
                     (vpos >= BACKGROUND_HEIGHT/2);
-
+    wire visible = (hpos < 640) && (vpos < 480);
     // Assign which cell this pixel belongs to
     wire [WIDTH - 1: 0] row_index;
     wire [HEIGHT - 1: 0] column_index;
@@ -77,9 +77,9 @@ module tt_um_example (
     reg [1:0] R_reg, G_reg, B_reg;
     always @* begin
         // Default color
-        R_reg = 2'b10;
-        G_reg = 2'b01; 
-        B_reg = 2'b01;
+        R_reg = 2'b00;
+        G_reg = 2'b00; 
+        B_reg = 2'b00;
         if (show_on_vga && boundary) begin
             if (curr_board[location] == 1'b1) begin
                 R_reg = 2'b00;
@@ -91,6 +91,11 @@ module tt_um_example (
               G_reg = 2'b10;
               B_reg= 2'b10;
             end
+        end
+        else if (show_on_vga && visible) begin
+          R_reg = 2'b01;
+          G_reg = 2'b10;
+          B_reg = 2'b10;
         end
     end
     assign R = R_reg;
