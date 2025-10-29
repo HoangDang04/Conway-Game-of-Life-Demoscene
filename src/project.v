@@ -57,6 +57,7 @@ module tt_um_example (
   );
 
   reg current_state [0:CellSize];
+  reg previous_state [0:CellSize];
 
   wire is_border = (hpos < StartWidth || hpos > EndWidth || vpos < StartHeight || vpos > EndHeight) ? 1 : 0;
 
@@ -82,10 +83,126 @@ module tt_um_example (
                  current_cell ? 2'b00 :
                                 2'b11;
 
-  always @(posedge vsync, negedge rst_n) begin
-    current_state[0] <= 1;
-  end
+  reg [5:0] frame_count;
+  reg [8:0] i;
 
+  reg [3:0] neighbours;
+
+  reg [1:0] test;
+
+  always @(posedge vsync) begin
+    // set initial state
+    if (frame_count == 0 && test == 0) begin
+      current_state[0] <= 1;
+      current_state[1] <= 1;
+      test <= 1;
+    end
+
+    if (frame_count == 60) begin
+      for (i = 0; i <= 255; i++) 
+        previous_state[i] = current_state[i];
+      for (i = 0; i <= 255; i++) begin
+        neighbours = 0;
+        if (i == 0) begin
+          if (previous_state[i + 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 16] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 16 + 1] == 1)
+            neighbours = neighbours + 1;
+        end else if (i == 15) begin
+          if (previous_state[i - 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 16 - 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 16] == 1)
+            neighbours = neighbours + 1;
+        end else if (i == 240) begin
+          if (previous_state[i - 16] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i - 16 + 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 1] == 1)
+            neighbours = neighbours + 1;
+        end else if (i == 255) begin
+          if (previous_state[i - 16 - 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i - 16] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i - 1] == 1)
+            neighbours = neighbours + 1;
+        end else if (i < 15) begin
+          if (previous_state[i - 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 16 - 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 16] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 16 + 1] == 1)
+            neighbours = neighbours + 1;
+        end else if (i > 240) begin
+          if (previous_state[i - 16 - 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i - 16] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i - 16 + 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i - 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 1] == 1)
+            neighbours = neighbours + 1;
+        end else if (i % 16 == 0) begin
+          if (previous_state[i - 16] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i - 16 + 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 16] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 16 + 1] == 1)
+            neighbours = neighbours + 1;
+        end else if ((i + 1) % 16 == 0) begin
+          if (previous_state[i - 16 - 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i - 16] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i - 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 16 - 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 16] == 1)
+            neighbours = neighbours + 1;
+        end else begin
+          if (previous_state[i - 16 - 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i - 16] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i - 16 + 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i - 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 16 - 1] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 16] == 1)
+            neighbours = neighbours + 1;
+          if (previous_state[i + 16 + 1] == 1)
+            neighbours = neighbours + 1;
+        end
+        if (neighbours == 2 || neighbours == 3)
+          current_state[i] = 1;
+        else 
+         current_state[i] = 0;
+      end
+      frame_count <= 0;
+    end else
+      frame_count <= frame_count + 1;
+  end
+  
   // List all unused inputs to prevent warnings
   wire _unused = &{ena, clk, rst_n, 1'b0};
 
