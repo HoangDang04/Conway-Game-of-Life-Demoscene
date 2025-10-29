@@ -53,7 +53,7 @@ module tt_um_example (
     .vpos(vpos),
     .hpos(hpos),
     .clk(clk),
-    .reset(rst_n),
+    .reset(rst_n)
   );
 
   reg current_state [0:CellSize];
