@@ -22,9 +22,8 @@ module tt_um_example (
     wire [9:0] hpos, vpos;
     
     // Start/ Stop simulations
-    wire run;
-    assign run = ui_in[0];    // This only works when you hit ui_in
-
+    wire run = ~ui_in[0];  // This only works when you hit ui_in
+    wire reset = ~ui_in[1];
     // assign output
     assign uo_out = {hsync, B[0], G[0], R[0], vsync, B[1], G[1], R[1]};
 
@@ -32,7 +31,7 @@ module tt_um_example (
     assign uio_out = 0;
     assign uio_oe = 0;
 
-    wire _unused = &{ena, clk, rst_n, 1'b0};
+    wire _unused = &{ena, clk, rst_n, 1'b0, ui_in[7:1], uio_in};
 
     hvsync_generator hvsync_gen(
         .clk(clk),
@@ -103,16 +102,15 @@ module tt_um_example (
     assign B = B_reg;
     
     reg [5:0] frame_count;
-    reg [8:0] i;
-
-    reg [3:0] neighbours;
+    integer i;
+    integer neighbours;
 
     reg [1:0] test;
 //======================= LOGIC ================================//
-always @(posedge vsync) begin
+always @(posedge reset) begin
         // set initial state
-    if (frame_count == 0 && test == 0) begin
-      // 
+      for(i = 0; i <= 255; i++)
+        curr_board[i] = 0;
       curr_board[3] <= 1;
       curr_board[6] <= 1;
       curr_board[19] <= 1;
@@ -221,9 +219,10 @@ always @(posedge vsync) begin
       curr_board[255] <= 1;
 
       test <= 1;
-    end
-
-    if (frame_count == 60) begin
+  end
+  always @(posedge vsync) begin
+  if(test == 1 && run == 1) begin
+    if (frame_count == 1) begin
       for (i = 0; i <= 255; i++) 
         prev_board[i] = curr_board[i];
       for (i = 0; i <= 255; i++) begin
@@ -244,13 +243,21 @@ always @(posedge vsync) begin
           neighbours = neighbours + 1;
         if (i < 240 && (i + 1) % 16 != 0 && prev_board[i + 16 + 1] == 1)
           neighbours = neighbours + 1;
-        if (neighbours == 2 || neighbours == 3)
-          curr_board[i] = 1;
-        else 
-         curr_board[i] = 0;
+        if (prev_board[i] == 1) begin
+          if(neighbours == 2 || neighbours == 3)
+            curr_board[i] = 1;
+          else
+            curr_board[i] = 0;
+        end else begin
+          if(neighbours == 3)
+            curr_board[i] = 3;
+          else
+            curr_board[i] = 0;
+        end
       end
       frame_count <= 0;
     end else
       frame_count <= frame_count + 1;
+  end
   end
 endmodule
