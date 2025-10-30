@@ -31,7 +31,7 @@ module tt_um_example(
   wire run = ~ui_in[0];  // This only works when you hit ui_in
   wire reset = ~ui_in[1];
 
-  vga_synchronization vga_sync (
+  vga_sync vga_synchronization (
     .hsync(hsync),
     .vsync(vsync),
     .vpos(vpos),
