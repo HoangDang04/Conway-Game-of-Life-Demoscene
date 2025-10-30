@@ -74,7 +74,7 @@ module tt_um_example(
       R_reg = 2'b00;
       G_reg = 2'b00; 
       B_reg = 2'b00;
-      if (show_on_vga && boundary) begin
+      if (boundary) begin
           if (curr_board[location] == 1'b1) begin
               R_reg = 2'b00;
               G_reg = 2'b00;
@@ -86,7 +86,7 @@ module tt_um_example(
             B_reg= 2'b10;
           end
       end
-      else if (show_on_vga && visible) begin
+      else if (visible) begin
         R_reg = 2'b01;
         G_reg = 2'b10;
         B_reg = 2'b10;
