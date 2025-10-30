@@ -102,15 +102,15 @@ module tt_um_example (
     assign B = B_reg;
     
     reg [5:0] frame_count;
-    integer i;
-    integer neighbours;
+    reg [8:0] i;
+    reg [3:0] neighbours;
 
     reg [1:0] test;
 //======================= LOGIC ================================//
 always @(posedge reset) begin
         // set initial state
       for(i = 0; i <= 255; i++)
-        curr_board[i] = 0;
+          curr_board[i[7:0]] = 0;
       curr_board[3] <= 1;
       curr_board[6] <= 1;
       curr_board[19] <= 1;
@@ -224,7 +224,7 @@ always @(posedge reset) begin
   if(test == 1 && run == 1) begin
     if (frame_count == 1) begin
       for (i = 0; i <= 255; i++) 
-        prev_board[i] = curr_board[i];
+        prev_board[i] = curr_board[i[7:0]];
       for (i = 0; i <= 255; i++) begin
         neighbours = 0;
         if (i > 15 && i % 16 != 0 && prev_board[i - 16 - 1] == 1)
@@ -245,14 +245,14 @@ always @(posedge reset) begin
           neighbours = neighbours + 1;
         if (prev_board[i] == 1) begin
           if(neighbours == 2 || neighbours == 3)
-            curr_board[i] = 1;
+            curr_board[i[7:0]] = 1;
           else
-            curr_board[i] = 0;
+            curr_board[i[7:0]] = 0;
         end else begin
           if(neighbours == 3)
-            curr_board[i] = 3;
+            curr_board[i[7:0]] = 3;
           else
-            curr_board[i] = 0;
+            curr_board[i[7:0]] = 0;
         end
       end
       frame_count <= 0;
