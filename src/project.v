@@ -27,6 +27,10 @@ module tt_um_example(
   wire [9:0] hpos;
   wire sound;
 
+  // Start/ Stop simulations
+  wire run = ~ui_in[0];  // This only works when you hit ui_in
+  wire reset = ~ui_in[1];
+
   vga_synchronization vga_sync (
     .hsync(hsync),
     .vsync(vsync),
@@ -55,11 +59,11 @@ module tt_um_example(
 
   //==================OTHER WIRE REGISTERS=====================//                                        
   //Checking the region belongs to 640 x 480 board or not, boundary works as a boolean
-  wire boundary = (hpos < 640 - BACKGROUND_WIDTH/2) &&
-                  (hpos >= BACKGROUND_WIDTH/2) &&
-                  (vpos < 480 - BACKGROUND_HEIGHT/2) &&
-                  (vpos >= BACKGROUND_HEIGHT/2);
-  wire visible = (hpos < 640) && (vpos < 480);
+  wire boundary = (hpos >= 640 - BACKGROUND_WIDTH/2) ||
+                  (hpos < BACKGROUND_WIDTH/2) ||
+                  (vpos >= 480 - BACKGROUND_HEIGHT/2) ||
+                  (vpos < BACKGROUND_HEIGHT/2);
+  wire not_visible = (hpos >= 640) || (vpos >= 480);
   // Assign which cell this pixel belongs to
   wire [WIDTH - 1: 0] row_index;
   wire [HEIGHT - 1: 0] column_index;
@@ -68,33 +72,20 @@ module tt_um_example(
   // Compute wheres the location of the cell in the board
   wire [WIDTH + HEIGHT - 1: 0] location = (column_index * BOARD_WIDTH) + row_index;
   //Genrate RGB signals for the board
-  reg [1:0] R_reg, G_reg, B_reg;
-  always @* begin
-      // Default color
-      R_reg = 2'b00;
-      G_reg = 2'b00; 
-      B_reg = 2'b00;
-      if (boundary) begin
-          if (curr_board[location] == 1'b1) begin
-              R_reg = 2'b00;
-              G_reg = 2'b00;
-              B_reg = 2'b00;
-          end
-          else begin
-            R_reg = 2'b10;
-            G_reg = 2'b10;
-            B_reg= 2'b10;
-          end
-      end
-      else if (visible) begin
-        R_reg = 2'b01;
-        G_reg = 2'b10;
-        B_reg = 2'b10;
-      end
-  end
-  assign R = R_reg;
-  assign G = G_reg;
-  assign B = B_reg;
+  wire current_cell = curr_board[location];
+
+  assign red   = not_visible  ? 2'b00 :
+                 boundary    ? 2'b11 :
+                 current_cell ? 2'b00 :
+                                2'b11;
+  assign green = not_visible  ? 2'b00 :
+                 boundary    ? 2'b01 :
+                 current_cell ? 2'b00 :
+                                2'b11;
+  assign blue  = not_visible  ? 2'b00 :
+                 boundary    ? 2'b00 :
+                 current_cell ? 2'b00 :
+                                2'b11;
 
   reg [5:0] frame_count;
   integer i;
@@ -102,10 +93,11 @@ module tt_um_example(
 
   reg [1:0] test;
 //======================= LOGIC ================================//
-  always @(posedge reset) begin
+  always @(posedge rst_n) begin
     // set initial state
   for(i = 0; i <= (SIZE - 1); i++)
       curr_board[i] = 0;
+
       curr_board[3] <= 1;
       curr_board[6] <= 1;
       curr_board[19] <= 1;
@@ -215,9 +207,10 @@ module tt_um_example(
 
       test <= 1;
   end
+
   always @(posedge vsync) begin
   if(test == 1 && run == 1) begin
-    if (frame_count == 1) begin
+    if (frame_count == 60) begin
       for (i = 0; i <= (SIZE - 1); i++) 
         prev_board[i] = curr_board[i];
       for (i = 0; i <= (SIZE - 1); i++) begin
