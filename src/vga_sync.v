@@ -16,7 +16,7 @@ module vga_sync (
 
     // Vertical line parameters (line counting starts at 0)
     localparam VSyncBegin = 480 + 10; // Send a sync pulse after visible + front porch lines.
-    localparam VsyncEnd = 480 + 10 + 2 - 1; // Continue sending sync pulse until after window.
+    localparam VSyncEnd = 480 + 10 + 2 - 1; // Continue sending sync pulse until after window.
     localparam VTotal = 480 + 10 + 2 + 33 - 1; // Reset vpos after total lines has been reached.
 
     // Each positive clock edge represents a pixel (see clock timing calculations in design doc).
