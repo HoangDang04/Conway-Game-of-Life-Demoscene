@@ -96,7 +96,7 @@ module tt_um_example(
 
   reg test;
 
-always @(posedge clk or negedge rst_n) begin
+always @(posedge clk) begin
   if (~rst_n) begin
     if (test == 0) begin
       // 
