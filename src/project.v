@@ -88,7 +88,7 @@ module tt_um_example(
                                 2'b11;
 
   reg [5:0] frame_count;
-  reg i [8:0];
+  reg [8:0] i;
   reg [3:0] neighbours;
 
   reg [1:0] test;
