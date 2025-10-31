@@ -210,6 +210,7 @@ always @(posedge clk or negedge rst_n) begin
       test <= 1;
     end
   end
+end
 
 always @(posedge vsync) begin
     // set initial state
