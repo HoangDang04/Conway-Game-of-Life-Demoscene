@@ -247,8 +247,17 @@ always @(posedge vsync) begin
       frame_count <= frame_count + 1;
   end
 
+
+
 reg dummy_ff;
-always @(posedge clk)
-    dummy_ff <= dummy_ff; 
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n)
+        dummy_ff <= 0;
+    else
+        dummy_ff <= 1'b0; 
+end
+
+assign uo_out[0] = dummy_ff; 
+
 
 endmodule
