@@ -246,4 +246,9 @@ always @(posedge vsync) begin
     end else
       frame_count <= frame_count + 1;
   end
+
+reg dummy_ff;
+always @(posedge clk)
+    dummy_ff <= dummy_ff; 
+
 endmodule
