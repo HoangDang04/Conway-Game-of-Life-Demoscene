@@ -88,7 +88,7 @@ module tt_um_example(
                                 2'b11;
 
   reg [5:0] frame_count;
-  integer i;
+  reg i [8:0];
   reg [3:0] neighbours;
 
   reg [1:0] test;
@@ -96,7 +96,7 @@ module tt_um_example(
   always @(posedge rst_n) begin
     // set initial state
   for(i = 0; i <= (SIZE - 1); i++)
-      curr_board[i] = 0;
+      curr_board[i [7:0]] = 0;
 
       curr_board[3] <= 1;
       curr_board[6] <= 1;
@@ -212,35 +212,35 @@ module tt_um_example(
   if(test == 1 && run == 1) begin
     if (frame_count == 60) begin
       for (i = 0; i <= (SIZE - 1); i++) 
-        prev_board[i] = curr_board[i];
+        prev_board[i [7:0]] = curr_board[i [7:0]];
       for (i = 0; i <= (SIZE - 1); i++) begin
         neighbours = 0;
-        if (i > 7 && i % 8 != 0 && prev_board[i - 8 - 1] == 1)
+        if (i > 7 && i % 8 != 0 && prev_board[i [7:0] - 8 - 1] == 1)
           neighbours = neighbours + 1;
-        if (i > 7 && prev_board[i - 8] == 1)
+        if (i > 7 && prev_board[i [7:0] - 8] == 1)
           neighbours = neighbours + 1;
-        if (i > 7 && (i + 1) % 8 != 0 && prev_board[i - 8 + 1] == 1)
+        if (i > 7 && (i + 1) % 8 != 0 && prev_board[i [7:0] - 8 + 1] == 1)
           neighbours = neighbours + 1;
-        if (i % 8 != 0 && prev_board[i - 1] == 1)
+        if (i % 8 != 0 && prev_board[i [7:0] - 1] == 1)
           neighbours = neighbours + 1;
-        if ((i + 1) % 8 != 0 && prev_board[i + 1] == 1)
+        if ((i + 1) % 8 != 0 && prev_board[i [7:0] + 1] == 1)
           neighbours = neighbours + 1;
-        if (i < 56 && i % 8 != 0 && prev_board[i + 8 - 1] == 1)
+        if (i < 56 && i % 8 != 0 && prev_board[i [7:0] + 8 - 1] == 1)
           neighbours = neighbours + 1;
-        if (i < 56 && prev_board[i + 8] == 1)
+        if (i < 56 && prev_board[i [7:0] + 8] == 1)
           neighbours = neighbours + 1;
-        if (i < 56 && (i + 1) % 8 != 0 && prev_board[i + 8 + 1] == 1)
+        if (i < 56 && (i + 1) % 8 != 0 && prev_board[i [7:0] + 8 + 1] == 1)
           neighbours = neighbours + 1;
-        if (prev_board[i] == 1) begin
+        if (prev_board[i [7:0]] == 1) begin
           if(neighbours == 2 || neighbours == 3)
-            curr_board[i] = 1;
+            curr_board[i [7:0]] = 1;
           else
-            curr_board[i] = 0;
+            curr_board[i [7:0]] = 0;
         end else begin
           if(neighbours == 3)
-            curr_board[i] = 1;
+            curr_board[i [7:0]] = 1;
           else
-            curr_board[i] = 0;
+            curr_board[i [7:0]] = 0;
         end
       end
       frame_count <= 0;
