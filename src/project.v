@@ -95,9 +95,10 @@ module tt_um_example(
   reg [3:0] neighbours;
 
   reg test;
-always @(posedge vsync) begin
-        // set initial state
-    if (frame_count == 0 && test == 0) begin
+
+always @(posedge clk or negedge rst_n) begin
+  if (~rst_n) begin
+    if (test == 0) begin
       // 
       curr_board[3] <= 1;
       curr_board[6] <= 1;
@@ -208,8 +209,11 @@ always @(posedge vsync) begin
 
       test <= 1;
     end
+  end
 
-    if (frame_count == 60) begin
+always @(posedge vsync) begin
+    // set initial state
+    if (frame_count == 60 && test == 1) begin
       for (i = 0; i <= 63; i++) 
         prev_board[i] = curr_board[i];
       for (i = 0; i <= 63; i++) begin
@@ -246,18 +250,5 @@ always @(posedge vsync) begin
     end else
       frame_count <= frame_count + 1;
   end
-
-
-
-reg dummy_ff;
-always @(posedge clk or negedge rst_n) begin
-    if (!rst_n)
-        dummy_ff <= 0;
-    else
-        dummy_ff <= 1'b0; 
-end
-
-assign uo_out[0] = dummy_ff; 
-
 
 endmodule
