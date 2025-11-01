@@ -42,17 +42,14 @@ module tt_um_example (
         .reset(~rst_n)
     );
     // =============REGISTER SIZE OF THE BOARD=================//
-    localparam CLOCK_FREQ = 24000000;
-    localparam WIDTH = 3, HEIGHT = 3;
-    localparam interval = CLOCK_FREQ / 10;
-    
-    localparam BOARD_WIDTH = 2 ** WIDTH;
-    localparam BOARD_HEIGHT = 2 ** HEIGHT;
+    localparam BIT_WIDTH = 3, BIT_HEIGHT = 3;
+    localparam BOARD_WIDTH = 2 ** BIT_WIDTH;
+    localparam BOARD_HEIGHT = 2 ** BIT_HEIGHT;
     localparam SIZE = BOARD_WIDTH * BOARD_HEIGHT;
     
     localparam CELL_SIZE = 24;
-    localparam BACKGROUND_HEIGHT = 480 - (CELL_SIZE * BOARD_HEIGHT);     // how much left of height in the background
-    localparam BACKGROUND_WIDTH = 640 - (CELL_SIZE * BOARD_WIDTH);    // how much left of width in the background
+    localparam BACKGROUND_HEIGHT = 480 - (CELL_SIZE * BOARD_HEIGHT);     // how much left of BIT_HEIGHT in the background
+    localparam BACKGROUND_WIDTH = 640 - (CELL_SIZE * BOARD_WIDTH);    // how much left of BIT_WIDTH in the background
 
     reg curr_board [0:SIZE-1];
     reg prev_board [0:SIZE-1];
@@ -65,48 +62,32 @@ module tt_um_example (
                     (vpos >= BACKGROUND_HEIGHT/2);
     wire visible = (hpos < 640) && (vpos < 480);
     // Assign which cell this pixel belongs to
-    wire [WIDTH - 1: 0] row_index;
-    wire [HEIGHT - 1: 0] column_index;
+    wire [BIT_WIDTH - 1: 0] row_index;
+    wire [BIT_HEIGHT - 1: 0] column_index;
     assign row_index = (hpos - BACKGROUND_WIDTH/2) / CELL_SIZE;
     assign column_index = (vpos - BACKGROUND_HEIGHT/2) / CELL_SIZE;
     // Compute wheres the location of the cell in the board
-    wire [WIDTH + HEIGHT - 1: 0] location = (column_index * BOARD_WIDTH) + row_index;
+    wire [BIT_WIDTH + BIT_HEIGHT - 1: 0] location = (column_index * BOARD_WIDTH) + row_index;
     //Genrate RGB signals for the board
-    reg [1:0] R_reg, G_reg, B_reg;
-    always @* begin
-        // Default color
-        R_reg = 2'b00;
-        G_reg = 2'b00; 
-        B_reg = 2'b00;
-        if (boundary) begin
-            if (curr_board[location] == 1'b1) begin
-                R_reg = 2'b00;
-                G_reg = 2'b00;
-                B_reg = 2'b00;
-            end
-            else begin
-              R_reg = 2'b10;
-              G_reg = 2'b10;
-              B_reg= 2'b10;
-            end
-        end
-        else if (visible) begin
-          R_reg = 2'b01;
-          G_reg = 2'b10;
-          B_reg = 2'b10;
-        end
-    end
-    assign R = R_reg;
-    assign G = G_reg;
-    assign B = B_reg;
-    
+	assign R =	(boundary && curr_board[location]) 	? 	2'b00 :
+				(boundary && !curr_board[location]) ? 	2'b10 :
+        		visible                           	? 	2'b01 :
+														2'b00;
+	assign G =	(boundary && curr_board[location]) 	? 	2'b00 :
+				(boundary && !curr_board[location]) ? 	2'b10 :
+        		visible                           	? 	2'b10 :
+														2'b00;
+	assign B =	(boundary && curr_board[location]) 	? 	2'b00 :
+				(boundary && !curr_board[location]) ? 	2'b10 :
+        		visible                           	? 	2'b10 :
+														2'b00;
+
+//======================= LOGIC ================================//
     reg [5:0] frame_count;
     integer i;
 
     reg [3:0] neighbours;
-
     reg [1:0] test;
-//======================= LOGIC ================================//
 always @(posedge vsync) begin
         // set initial state
     if (frame_count == 0 && test == 0) begin
@@ -220,35 +201,34 @@ always @(posedge vsync) begin
 
       test <= 1;
     end
-
-    if (frame_count == 60) begin
-      for (i = 0; i <= 255; i++) 
-        prev_board[i] = curr_board[i];
-      for (i = 0; i <= 255; i++) begin
-        neighbours = 0;
-        if (i > 15 && i % 16 != 0 && prev_board[i - 16 - 1] == 1)
-          neighbours = neighbours + 1;
-        if (i > 15 && prev_board[i - 16] == 1)
-          neighbours = neighbours + 1;
-        if (i > 15 && (i + 1) % 16 != 0 && prev_board[i - 16 + 1] == 1)
-          neighbours = neighbours + 1;
-        if (i % 16 != 0 && prev_board[i - 1] == 1)
-          neighbours = neighbours + 1;
-        if ((i + 1) % 16 != 0 && prev_board[i + 1] == 1)
-          neighbours = neighbours + 1;
-        if (i < 240 && i % 16 != 0 && prev_board[i + 16 - 1] == 1)
-          neighbours = neighbours + 1;
-        if (i < 240 && prev_board[i + 16] == 1)
-          neighbours = neighbours + 1;
-        if (i < 240 && (i + 1) % 16 != 0 && prev_board[i + 16 + 1] == 1)
-          neighbours = neighbours + 1;
-        if (neighbours == 2 || neighbours == 3)
-          curr_board[i] = 1;
-        else 
-         curr_board[i] = 0;
-      end
-      frame_count <= 0;
-    end else
-      frame_count <= frame_count + 1;
-  end
+	if (frame_count == 60) begin
+		for (i = 0; i <= BOARD_WIDTH * BOARD_HEIGHT; i++) 
+        	prev_board[i] = curr_board[i];
+		for (i = 0; i <= BOARD_WDITH * BOARD_HEIGHT; i++) begin
+        	neighbours = 0;
+			if (i > BIT_WIDTH * BIT_HEIGHT - 1 && i % (BIT_WIDTH * BIT_HEIGHT) != 0 && prev_board[i - BIT_WIDTH * BIT_HEIGHT - 1] == 1)
+          		neighbours = neighbours + 1;
+        	if (i > BIT_WIDTH * BIT_HEIGHT - 1 && prev_board[i - BIT_WIDTH * BIT_HEIGHT] == 1)
+          		neighbours = neighbours + 1;
+			if (i > BIT_WIDTH * BIT_HEIGHT - 1 && (i + 1) % (BIT_WIDTH * BIT_HEIGHT) != 0 && prev_board[i - BIT_WIDTH * BIT_HEIGHT + 1] == 1)
+          		neighbours = neighbours + 1;
+			if (i % (BIT_WIDTH * BIT_HEIGHT) != 0 && prev_board[i - 1] == 1)
+          		neighbours = neighbours + 1;
+			if ((i + 1) % (BIT_WIDTH * BIT_HEIGHT) != 0 && prev_board[i + 1] == 1)
+          		neighbours = neighbours + 1;
+			if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && i % (BIT_WIDTH * BIT_HEIGHT) != 0 && prev_board[i + (BIT_WIDTH * BIT_HEIGHT) - 1] == 1)
+          		neighbours = neighbours + 1;
+			if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && prev_board[i + BIT_WIDTH * BIT_HEIGHT] == 1)
+          		neighbours = neighbours + 1;
+			if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % (BIT_WIDTH * BIT_HEIGHT) != 0 && prev_board[i + BIT_WIDTH * BIT_HEIGHT + 1] == 1)
+          		neighbours = neighbours + 1;
+        	if (neighbours == 2 || neighbours == 3)
+          		curr_board[i] = 1;
+        	else 
+    	curr_board[i] = 0;
+    	end
+      	frame_count <= 0;
+	end else
+      	frame_count <= frame_count + 1;
+  	end
 endmodule
