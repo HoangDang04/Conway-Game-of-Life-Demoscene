@@ -21,8 +21,8 @@ module tt_um_example (
     wire [9:0] hpos, vpos;
     
     // Start/ Stop simulations
-    wire run;
-    assign run = ui_in[0];    // This only works when you hit ui_in
+    wire run = ~ui_in[0];    // This only works when you hit ui_in
+	wire reset = ~ui_in[1];
 
     // assign output
     assign uo_out = {hsync, B[0], G[0], R[0], vsync, B[1], G[1], R[1]};
@@ -31,7 +31,7 @@ module tt_um_example (
     assign uio_out = 0;
     assign uio_oe = 0;
 
-    wire _unused = &{ena, clk, rst_n, 1'b0};
+	wire _unused = &{ena, clk, rst_n, 1'b0, u_in[7:2], uio_in};
 
     vga_sync vga_synchronize(
         .hsync(hsync),
@@ -88,9 +88,8 @@ module tt_um_example (
 
     reg [3:0] neighbours;
     reg [1:0] test;
-always @(posedge vsync) begin
+	always @(posedge reset) begin
         // set initial state
-    if (frame_count == 0 && test == 0) begin
       // U
       curr_board[3] <= 1;
       // curr_board[6] <= 1;
@@ -198,37 +197,47 @@ always @(posedge vsync) begin
       // curr_board[239] <= 1;
       // curr_board[253] <= 1;
       // curr_board[255] <= 1;
-
+	
       test <= 1;
     end
-	if (frame_count == 60) begin
-		for (i = 0; i <= BOARD_WIDTH * BOARD_HEIGHT; i++) 
-        	prev_board[i] = curr_board[i];
-		for (i = 0; i <= BOARD_WIDTH * BOARD_HEIGHT; i++) begin
-        	neighbours = 0;
-			if (i > BIT_WIDTH * BIT_HEIGHT - 1 && i % (BIT_WIDTH * BIT_HEIGHT) != 0 && prev_board[i - BIT_WIDTH * BIT_HEIGHT - 1] == 1)
-          		neighbours = neighbours + 1;
-        	if (i > BIT_WIDTH * BIT_HEIGHT - 1 && prev_board[i - BIT_WIDTH * BIT_HEIGHT] == 1)
-          		neighbours = neighbours + 1;
-			if (i > BIT_WIDTH * BIT_HEIGHT - 1 && (i + 1) % (BIT_WIDTH * BIT_HEIGHT) != 0 && prev_board[i - BIT_WIDTH * BIT_HEIGHT + 1] == 1)
-          		neighbours = neighbours + 1;
-			if (i % (BIT_WIDTH * BIT_HEIGHT) != 0 && prev_board[i - 1] == 1)
-          		neighbours = neighbours + 1;
-			if ((i + 1) % (BIT_WIDTH * BIT_HEIGHT) != 0 && prev_board[i + 1] == 1)
-          		neighbours = neighbours + 1;
-			if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && i % (BIT_WIDTH * BIT_HEIGHT) != 0 && prev_board[i + (BIT_WIDTH * BIT_HEIGHT) - 1] == 1)
-          		neighbours = neighbours + 1;
-			if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && prev_board[i + BIT_WIDTH * BIT_HEIGHT] == 1)
-          		neighbours = neighbours + 1;
-			if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % (BIT_WIDTH * BIT_HEIGHT) != 0 && prev_board[i + BIT_WIDTH * BIT_HEIGHT + 1] == 1)
-          		neighbours = neighbours + 1;
-        	if (neighbours == 2 || neighbours == 3)
-          		curr_board[i] = 1;
-        	else 
-    	curr_board[i] = 0;
-    	end
-      	frame_count <= 0;
-	end else
-      	frame_count <= frame_count + 1;
-  	end
+	always @(posedge vsync) begin
+		if(test == 1 && run == 1) begin
+			if (frame_count == 60) begin
+				for (i = 0; i <= SIZE - 1; i++) 
+		        	prev_board[i] = curr_board[i];
+				for (i = 0; i <= SIZE - 1; i++) begin
+		        	neighbours = 0;
+					if (i > BOARD_WIDTH - 1 && i % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH - 1] == 1)
+		          		neighbours = neighbours + 1;
+		        	if (i > BOARD_WIDTH - 1 && prev_board[i - BOARD_WIDTH] == 1)
+		          		neighbours = neighbours + 1;
+					if (i > BOARD_WIDTH - 1 && (i + 1) % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH + 1] == 1)
+		          		neighbours = neighbours + 1;
+					if (i % BOARD_WIDTH != 0 && prev_board[i - 1] == 1)
+		          		neighbours = neighbours + 1;
+					if ((i + 1) % BOARD_WIDTH != 0 && prev_board[i + 1] == 1)
+		          		neighbours = neighbours + 1;
+					if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && i % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH - 1] == 1)
+		          		neighbours = neighbours + 1;
+					if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && prev_board[i + BOARD_WIDTH] == 1)
+		          		neighbours = neighbours + 1;
+					if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH + 1] == 1)
+		          		neighbours = neighbours + 1;
+					if (prev_board[i] == 1) begin
+						if (neighbours == 2 || neighbours == 3)
+							curr_board[i] = 1;
+						else
+							curr_board[i] = 0;
+					end else begin
+						if (neighbours == 3)
+							curr_board[i] = 1;
+						else
+							curr_board[i] = 0;
+					end
+				end
+				frame_count <= 0;
+			end else
+				frame_count <= frame_count + 1;
+		end
+	end
 endmodule
