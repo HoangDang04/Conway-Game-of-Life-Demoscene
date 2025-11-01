@@ -204,7 +204,7 @@ always @(posedge vsync) begin
 	if (frame_count == 60) begin
 		for (i = 0; i <= BOARD_WIDTH * BOARD_HEIGHT; i++) 
         	prev_board[i] = curr_board[i];
-		for (i = 0; i <= BOARD_WDITH * BOARD_HEIGHT; i++) begin
+		for (i = 0; i <= BOARD_WIDTH * BOARD_HEIGHT; i++) begin
         	neighbours = 0;
 			if (i > BIT_WIDTH * BIT_HEIGHT - 1 && i % (BIT_WIDTH * BIT_HEIGHT) != 0 && prev_board[i - BIT_WIDTH * BIT_HEIGHT - 1] == 1)
           		neighbours = neighbours + 1;
