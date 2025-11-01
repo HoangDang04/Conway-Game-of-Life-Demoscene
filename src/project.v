@@ -204,7 +204,7 @@ module tt_um_example (
 		if(test == 1 && run == 1) begin
 			if (frame_count == 60) begin
 				for (i = 0; i <= SIZE - 1; i++) 
-		        	prev_board[BIT_WIDTH + BIT_HEIGHT - 1 : 0] = curr_board[BIT_WIDTH + BIT_HEIGHT - 1 : 0];
+		        	prev_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]];
 				for (i = 0; i <= SIZE - 1; i++) begin
 		        	neighbours = 0;
 					if (i > BOARD_WIDTH - 1 && i % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH - 1] == 1)
@@ -223,16 +223,16 @@ module tt_um_example (
 		          		neighbours = neighbours + 1;
 					if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH + 1] == 1)
 		          		neighbours = neighbours + 1;
-					if (prev_board[BIT_WIDTH + BIT_HEIGHT - 1 : 0] == 1) begin
+					if (prev_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] == 1) begin
 						if (neighbours == 2 || neighbours == 3)
-							curr_board[BIT_WIDTH + BIT_HEIGHT - 1 : 0] = 1;
+							curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = 1;
 						else
-							curr_board[BIT_WIDTH + BIT_HEIGHT - 1 : 0] = 0;
+							curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = 0;
 					end else begin
 						if (neighbours == 3)
-							curr_board[BIT_WIDTH + BIT_HEIGHT - 1 : 0] = 1;
+							curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = 1;
 						else
-							curr_board[BIT_WIDTH + BIT_HEIGHT - 1 : 0] = 0;
+							curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = 0;
 					end
 				end
 				frame_count <= 0;
