@@ -305,7 +305,7 @@ integer geese_frame = 0;
 	reg [BIT_WIDTH + BIT_HEIGHT : 0] i;
     reg [3:0] neighbours;
     reg [1:0] test;
-	always @(posedge reset) begin
+	always @(negedge reset) begin
         // set initial state
       // U
       curr_board[3] <= 1;
