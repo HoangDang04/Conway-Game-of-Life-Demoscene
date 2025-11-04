@@ -305,9 +305,10 @@ module tt_um_example (
 	reg [BIT_WIDTH + BIT_HEIGHT : 0] i;
     reg [3:0] neighbours;
     reg [1:0] test;
-    always @(posedge reset) begin
+	always @(posedge vsync) begin
         // set initial state
       // U
+		if(frame_count == 0 && test == 0) begin
       curr_board[3] <= 1;
       // curr_board[6] <= 1;
       // curr_board[19] <= 1;
@@ -417,8 +418,6 @@ module tt_um_example (
 	
       test <= 1;
     end
-	always @(posedge vsync) begin
-		if(test == 1 && run == 1) begin
 			if (frame_count == 60) begin
 				for (i = 0; i <= SIZE - 1; i++) 
 		        	prev_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]];
@@ -455,6 +454,5 @@ module tt_um_example (
 				frame_count <= 0;
 			end else
 				frame_count <= frame_count + 1;
-		end
 	end
 endmodule
