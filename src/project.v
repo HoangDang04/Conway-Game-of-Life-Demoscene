@@ -19,7 +19,6 @@ module tt_um_vga_example (
     wire hsync, vsync;
     wire [1:0] R, G, B;
     wire [9:0] hpos, vpos;
-    wire show_on_vga;
     
     // Start/ Stop simulations
     wire run = ~ui_in[0];    // This only works when you hit ui_in
@@ -34,14 +33,13 @@ module tt_um_vga_example (
 
 	wire _unused = &{ena, clk, 1'b0, ui_in[7:2], uio_in};
 
-    hvsync_generator hvsync_gen(
-        .clk(clk),
-        .reset(~rst_n),
+    vga_sync vga_synchronize(
         .hsync(hsync),
         .vsync(vsync),
-        .display_on(show_on_vga),
+        .vpos(vpos),
         .hpos(hpos),
-        .vpos(vpos)
+        .clk(clk),
+        .reset(~rst_n)
     );
     // =============REGISTER SIZE OF THE BOARD=================//
     localparam BIT_WIDTH = 3, BIT_HEIGHT = 3;
