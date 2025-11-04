@@ -426,14 +426,14 @@ module tt_um_example (
 				for (i = 0; i <= SIZE - 1; i++) 
 		        	prev_board[i[BIT_WIDTH + BIT_HEIGHT -1:0]] = curr_board[i[BIT_WIDTH + BIT_HEIGHT -1:0]];
 				for (i = 0; i <= SIZE - 1; i++) begin
-    				neighbours =	(i > BOARD_WIDTH - 1 && i % BOARD_WIDTH != 0 ? prev_board[i - BOARD_WIDTH - 1] : 0) +
-        							(i > BOARD_WIDTH - 1 ? prev_board[i - BOARD_WIDTH] : 0) +
-        							(i > BOARD_WIDTH - 1 && (i + 1) % BOARD_WIDTH != 0 ? prev_board[i - BOARD_WIDTH + 1] : 0) +
-        							(i % BOARD_WIDTH != 0 ? prev_board[i - 1] : 0) +
-       							 	((i + 1) % BOARD_WIDTH != 0 ? prev_board[i + 1] : 0) +
-        							(i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && i % BOARD_WIDTH != 0 ? prev_board[i + BOARD_WIDTH - 1] : 0) +
-        							(i < BOARD_WIDTH * (BOARD_HEIGHT - 1) ? prev_board[i + BOARD_WIDTH] : 0) +
-        							(i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % BOARD_WIDTH != 0 ? prev_board[i + BOARD_WIDTH + 1] : 0);
+					neighbours =	((i > BOARD_WIDTH - 1 && i % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH - 1]) ? 1 : 0) +
+									((i > BOARD_WIDTH - 1 && prev_board[i - BOARD_WIDTH]) ? 1 : 0) +
+									((i > BOARD_WIDTH - 1 && (i + 1) % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH + 1]) ? 1 : 0) +
+									((i % BOARD_WIDTH != 0 && prev_board[i - 1]) ? 1 : 0) +
+									(((i + 1) % BOARD_WIDTH != 0 && prev_board[i + 1]) ? 1 : 0) +
+									((i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && i % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH - 1]) ? 1 : 0) +
+									((i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && prev_board[i + BOARD_WIDTH]) ? 1 : 0) +
+									((i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH + 1]) ? 1 : 0);
     			if (prev_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] == 1)
         			curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = (neighbours == 2 || neighbours == 3);
     			else
