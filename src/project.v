@@ -304,7 +304,7 @@ module tt_um_example (
     reg [5:0] frame_count;
 	
 	reg [BIT_WIDTH + BIT_HEIGHT : 0] i;
-    reg [3:0] neighbours;
+    wire [3:0] neighbours;
     reg [1:0] test;
 	always @(posedge vsync) begin
         // set initial state
@@ -426,38 +426,22 @@ module tt_um_example (
 				for (i = 0; i <= SIZE - 1; i++) 
 		        	prev_board[i[BIT_WIDTH + BIT_HEIGHT -1:0]] = curr_board[i[BIT_WIDTH + BIT_HEIGHT -1:0]];
 				for (i = 0; i <= SIZE - 1; i++) begin
-		        	neighbours = 0;
-					if (i > BOARD_WIDTH - 1 && i % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH - 1] == 1)
-		          		neighbours = neighbours + 1;
-		        	if (i > BOARD_WIDTH - 1 && prev_board[i - BOARD_WIDTH] == 1)
-		          		neighbours = neighbours + 1;
-					if (i > BOARD_WIDTH - 1 && (i + 1) % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH + 1] == 1)
-		          		neighbours = neighbours + 1;
-					if (i % BOARD_WIDTH != 0 && prev_board[i - 1] == 1)
-		          		neighbours = neighbours + 1;
-					if ((i + 1) % BOARD_WIDTH != 0 && prev_board[i + 1] == 1)
-		          		neighbours = neighbours + 1;
-					if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && i % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH - 1] == 1)
-		          		neighbours = neighbours + 1;
-					if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && prev_board[i + BOARD_WIDTH] == 1)
-		          		neighbours = neighbours + 1;
-					if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH + 1] == 1)
-		          		neighbours = neighbours + 1;
-					if (prev_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] == 1) begin
-						if (neighbours == 2 || neighbours == 3)
-							curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = 1;
-						else
-							curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = 0;
-					end else begin
-						if (neighbours == 3)
-							curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = 1;
-						else
-							curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = 0;
-					end
+    				neighbours =	(i > BOARD_WIDTH - 1 && i % BOARD_WIDTH != 0 ? prev_board[i - BOARD_WIDTH - 1] : 0) +
+        							(i > BOARD_WIDTH - 1 ? prev_board[i - BOARD_WIDTH] : 0) +
+        							(i > BOARD_WIDTH - 1 && (i + 1) % BOARD_WIDTH != 0 ? prev_board[i - BOARD_WIDTH + 1] : 0) +
+        							(i % BOARD_WIDTH != 0 ? prev_board[i - 1] : 0) +
+       							 	((i + 1) % BOARD_WIDTH != 0 ? prev_board[i + 1] : 0) +
+        							(i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && i % BOARD_WIDTH != 0 ? prev_board[i + BOARD_WIDTH - 1] : 0) +
+        							(i < BOARD_WIDTH * (BOARD_HEIGHT - 1) ? prev_board[i + BOARD_WIDTH] : 0) +
+        							(i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % BOARD_WIDTH != 0 ? prev_board[i + BOARD_WIDTH + 1] : 0);
+    			if (prev_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] == 1)
+        			curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = (neighbours == 2 || neighbours == 3);
+    			else
+        			curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = (neighbours == 3);
 				end
-				frame_count <= 0;
+					frame_count <= 0;
 			end else
-				frame_count <= frame_count + 1;
+			frame_count <= frame_count + 1;
 		end
 	end
 endmodule
