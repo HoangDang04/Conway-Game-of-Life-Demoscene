@@ -55,209 +55,209 @@ module tt_um_vga_example (
 
     reg curr_board [0:SIZE-1];
     reg prev_board [0:SIZE-1];
-    //=================GOOSE BACKGROUND =========================//
-    localparam GOOSE_X_START = 10;
-    localparam GOOSE_Y_START = 470;
-    localparam GOOSE_CELL_SIZE = 5;
-    localparam GOOSE_WIDTH = 32 * GOOSE_CELL_SIZE;
-    localparam GOOSE_HEIGHT = 32 * GOOSE_CELL_SIZE;
+//     //=================GOOSE BACKGROUND =========================//
+//     localparam GOOSE_X_START = 10;
+//     localparam GOOSE_Y_START = 470;
+//     localparam GOOSE_CELL_SIZE = 5;
+//     localparam GOOSE_WIDTH = 32 * GOOSE_CELL_SIZE;
+//     localparam GOOSE_HEIGHT = 32 * GOOSE_CELL_SIZE;
 
-    wire goose_region = (hpos >= GOOSE_X_START) &&
-                        (hpos < GOOSE_X_START + GOOSE_WIDTH) &&
-                        (vpos < GOOSE_Y_START) &&
-                        (vpos >= GOOSE_Y_START - GOOSE_HEIGHT);
-    reg [1:0] R_goose;
-    reg [1:0] B_goose;
-    reg [1:0] G_goose;
-    wire [2:0] white_goose, black_goose, orange_goose, red_goose;
-    // Frame 0 goose
-    assign white_goose[0] =  (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 9 * GOOSE_CELL_SIZE)))  ||
-                        (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 9 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 10 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 11 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 11 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 11 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 14 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 14 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 16 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 16 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 17 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 17 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 18 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 20 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 20 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE)));
-    assign black_goose[0] =  (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 1 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 2 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 1 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 2 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 14 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 4 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 14 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 19 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 10 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 7 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 8 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 22 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 23 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 11 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 9 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 9 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 10 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 10 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 11 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 11 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 11 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 11 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 14 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 11 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 13 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 13 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 14 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 14 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 20 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 14 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 16 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 23 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 16 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 17 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 23 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 24 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 17 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 18 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 22 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 23 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 19 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 20 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 21 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
-                        (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 20 * GOOSE_CELL_SIZE)));
-    assign orange_goose[0] =  (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 4 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 23 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 17 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 18 * GOOSE_CELL_SIZE)));
-    assign red_goose[0] =     (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 19 * GOOSE_CELL_SIZE)));
-    // Frame 1 goose
-    assign white_goose[1] =   (((hpos >= GOOSE_X_START + 12 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 7 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 9 * GOOSE_CELL_SIZE)))  ||
-                              (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 9 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 10 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 11 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 11 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 11 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 14 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 14 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 16 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 16 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 17 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 17 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 19 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 20 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 23 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 21 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 23 * GOOSE_CELL_SIZE)));
-    assign black_goose[1] =   (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 1 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 2 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 1 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 2 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 14 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 4 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 3 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 4 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 4 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 12 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 13 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 4 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 12 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 7 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 9 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 6 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 7 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 7 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 8 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 9 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 9 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 10 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 11 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 11 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 11 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 11 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 13 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 16 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 13 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 14 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 14 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 16 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 14 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 16 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 19 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 16 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 17 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 17 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 18 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 20 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 19 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 21 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 22 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 23 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 19 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 22 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 23 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 20 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 23 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 24 * GOOSE_CELL_SIZE)));
-    assign orange_goose[1] =  (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 14 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 4 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 4 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 3 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 19 * GOOSE_CELL_SIZE)));
-    assign red_goose[1]    =  (((hpos >= GOOSE_X_START + 19 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE)))||
-                              (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 20 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE)));
-    // Frame 2 goose
-    assign white_goose[2] =   (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 9 * GOOSE_CELL_SIZE)))  ||
-                              (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 9 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 10 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 11 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 11 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 11 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 13 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 13 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 19 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 17 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 18 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 19 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 20 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 21 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE)));
-    assign black_goose[2] =   (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 1 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 2 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 1 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 2 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 14 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 4 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 13 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 19 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 10 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 7 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 8 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 22 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 23 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 9 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 9 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 10 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 10 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 11 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 11 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 11 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 11 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 13 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 13 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 17 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 13 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 14 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 13 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 22 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 24 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 17 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 18 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 24 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 25 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 19 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 23 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 24 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 20 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 22 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 23 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 20 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 21 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 22 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 23 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE)));
-    assign orange_goose[2] =  (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 4 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
-                              (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 24 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 19 * GOOSE_CELL_SIZE)));
-    assign red_goose[2] =     (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 23   * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 20 * GOOSE_CELL_SIZE)));
+//     wire goose_region = (hpos >= GOOSE_X_START) &&
+//                         (hpos < GOOSE_X_START + GOOSE_WIDTH) &&
+//                         (vpos < GOOSE_Y_START) &&
+//                         (vpos >= GOOSE_Y_START - GOOSE_HEIGHT);
+//     reg [1:0] R_goose;
+//     reg [1:0] B_goose;
+//     reg [1:0] G_goose;
+//     wire [2:0] white_goose, black_goose, orange_goose, red_goose;
+//     // Frame 0 goose
+//     assign white_goose[0] =  (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 9 * GOOSE_CELL_SIZE)))  ||
+//                         (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 9 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 10 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 11 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 11 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 11 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 14 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 14 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 16 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 16 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 17 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 17 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 18 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 20 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 20 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE)));
+//     assign black_goose[0] =  (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 1 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 2 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 1 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 2 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 14 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 4 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 14 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 19 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 10 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 7 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 8 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 22 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 23 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 11 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 9 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 9 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 10 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 10 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 11 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 11 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 11 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 11 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 14 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 11 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 13 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 13 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 14 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 14 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 20 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 14 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 16 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 23 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 16 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 17 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 23 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 24 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 17 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 18 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 22 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 23 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 19 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 20 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 21 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
+//                         (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 20 * GOOSE_CELL_SIZE)));
+//     assign orange_goose[0] =  (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 4 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 23 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 17 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 18 * GOOSE_CELL_SIZE)));
+//     assign red_goose[0] =     (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 19 * GOOSE_CELL_SIZE)));
+//     // Frame 1 goose
+//     assign white_goose[1] =   (((hpos >= GOOSE_X_START + 12 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 7 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 9 * GOOSE_CELL_SIZE)))  ||
+//                               (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 9 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 10 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 11 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 11 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 11 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 14 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 14 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 16 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 16 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 17 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 17 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 19 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 20 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 23 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 21 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 23 * GOOSE_CELL_SIZE)));
+//     assign black_goose[1] =   (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 1 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 2 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 1 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 2 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 14 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 4 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 3 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 4 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 4 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 12 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 13 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 4 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 12 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 7 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 9 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 6 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 7 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 7 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 8 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 9 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 9 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 10 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 11 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 11 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 11 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 11 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 13 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 16 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 13 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 14 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 14 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 16 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 14 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 16 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 19 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 16 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 17 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 17 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 18 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 20 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 19 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 21 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 22 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 23 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 19 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 22 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 23 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 20 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 23 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 24 * GOOSE_CELL_SIZE)));
+//     assign orange_goose[1] =  (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 14 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 4 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 4 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 3 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 19 * GOOSE_CELL_SIZE)));
+//     assign red_goose[1]    =  (((hpos >= GOOSE_X_START + 19 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 20 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE)))||
+//                               (((hpos >= GOOSE_X_START + 20 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 20 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE)));
+//     // Frame 2 goose
+//     assign white_goose[2] =   (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 9 * GOOSE_CELL_SIZE)))  ||
+//                               (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 9 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 10 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 11 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 11 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 11 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 13 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 13 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 19 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 17 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 18 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 19 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 20 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 21 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE)));
+//     assign black_goose[2] =   (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 1 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 2 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 1 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 2 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 14 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 4 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 13 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 19 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 21 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 5 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 6 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 10 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 6 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 7 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 7 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 8 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 22 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 23 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 7 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 8 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 9 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 9 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 10 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 9 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 10 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 10 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 11 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 10 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 11 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 11 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 12 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 11 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 13 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 13 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 12 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 17 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 13 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 13 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 14 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 16 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 17 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 13 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 22 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 24 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 17 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 18 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 24 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 25 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 19 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 23 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 24 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 20 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 22 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 23 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 20 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 21 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 22 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 22 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 22 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 23 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 18 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 19 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 21 * GOOSE_CELL_SIZE)));
+//     assign orange_goose[2] =  (((hpos >= GOOSE_X_START + 14 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 15 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 15 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 16 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 4 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 17 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 18 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 2 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 5 * GOOSE_CELL_SIZE))) ||
+//                               (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 24 * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 18 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 19 * GOOSE_CELL_SIZE)));
+//     assign red_goose[2] =     (((hpos >= GOOSE_X_START + 21 * GOOSE_CELL_SIZE) && (hpos < GOOSE_X_START + 23   * GOOSE_CELL_SIZE)) && ((vpos < GOOSE_Y_START - 19 * GOOSE_CELL_SIZE) && (vpos >= GOOSE_Y_START - 20 * GOOSE_CELL_SIZE)));
 
 
 
-reg [5:0] geese_frame_count = 0;
-integer geese_frame = 0;
-// Frame counter (sequential)
-    always @(posedge vsync) begin
-      if(geese_frame_count == 60) begin
-        geese_frame_count <= 0;
-        if (geese_frame == 2)
-          geese_frame <= 0;
-        else
-          geese_frame <= geese_frame + 1;
-      end else begin
-        geese_frame_count <= geese_frame_count + 1;
-      end
-    end
+// reg [5:0] geese_frame_count = 0;
+// integer geese_frame = 0;
+// // Frame counter (sequential)
+//     always @(posedge vsync) begin
+//       if(geese_frame_count == 60) begin
+//         geese_frame_count <= 0;
+//         if (geese_frame == 2)
+//           geese_frame <= 0;
+//         else
+//           geese_frame <= geese_frame + 1;
+//       end else begin
+//         geese_frame_count <= geese_frame_count + 1;
+//       end
+//     end
 
-    always @(*) begin
-      R_goose = 2'b01;
-      G_goose = 2'b10; 
-      B_goose = 2'b10;
-      if (white_goose[geese_frame]) begin
-        R_goose = 2'b11; 
-        G_goose = 2'b11; 
-        B_goose = 2'b11;
-      end
-      if (black_goose[geese_frame]) begin
-      R_goose = 2'b00; 
-      G_goose = 2'b00; 
-      B_goose = 2'b00;
-      end
-      if (orange_goose[geese_frame]) begin
-        R_goose = 2'b11; 
-        G_goose = 2'b01; 
-        B_goose = 2'b10;
-      end
-      if (red_goose[geese_frame]) begin
-        R_goose = 2'b11; 
-        G_goose = 2'b00; 
-        B_goose = 2'b00;
-      end
-  end
+//     always @(*) begin
+//       R_goose = 2'b01;
+//       G_goose = 2'b10; 
+//       B_goose = 2'b10;
+//       if (white_goose[geese_frame]) begin
+//         R_goose = 2'b11; 
+//         G_goose = 2'b11; 
+//         B_goose = 2'b11;
+//       end
+//       if (black_goose[geese_frame]) begin
+//       R_goose = 2'b00; 
+//       G_goose = 2'b00; 
+//       B_goose = 2'b00;
+//       end
+//       if (orange_goose[geese_frame]) begin
+//         R_goose = 2'b11; 
+//         G_goose = 2'b01; 
+//         B_goose = 2'b10;
+//       end
+//       if (red_goose[geese_frame]) begin
+//         R_goose = 2'b11; 
+//         G_goose = 2'b00; 
+//         B_goose = 2'b00;
+//       end
+//   end
 
     //==================OTHER WIRE REGISTERS=====================//                                        
     //Checking the region belongs to 640 x 480 board or not, boundary works as a boolean
@@ -274,21 +274,33 @@ integer geese_frame = 0;
     // Compute wheres the location of the cell in the board
     wire [BIT_WIDTH + BIT_HEIGHT -1:0] location = (column_index * BOARD_WIDTH) + row_index;
     //Genrate RGB signals for the board
-	assign R =	goose_region                        ?   R_goose :
-              (boundary && curr_board[location]) 	? 	2'b00 :
-				      (boundary && !curr_board[location]) ? 	2'b10 :
-        		  visible                           	? 	2'b01 :
-														                          2'b00;
-	assign G =	goose_region                        ?   B_goose :
-              (boundary && curr_board[location]) 	? 	2'b00 :
-				      (boundary && !curr_board[location]) ? 	2'b10 :
-        		  visible                           	? 	2'b10 :
-														                          2'b00;
-	assign B =	goose_region                        ?   G_goose :
-              (boundary && curr_board[location]) 	? 	2'b00 :
-				      (boundary && !curr_board[location]) ? 	2'b10 :
-        		  visible                           	? 	2'b10 :
-														                          2'b00;
+	assign R =	(boundary && curr_board[location]) 	? 	2'b00 :
+				(boundary && !curr_board[location]) ? 	2'b10 :
+        		visible                           	? 	2'b01 :
+														2'b00;
+	assign G =	(boundary && curr_board[location]) 	? 	2'b00 :
+				(boundary && !curr_board[location]) ? 	2'b10 :
+        		visible                           	? 	2'b10 :
+														2'b00;
+	assign B =	(boundary && curr_board[location]) 	? 	2'b00 :
+				(boundary && !curr_board[location]) ? 	2'b10 :
+        		visible                           	? 	2'b10 :
+														2'b00;
+	// assign R =	goose_region                        ?   R_goose :
+ //              (boundary && curr_board[location]) 	? 	2'b00 :
+	// 			      (boundary && !curr_board[location]) ? 	2'b10 :
+ //        		  visible                           	? 	2'b01 :
+	// 													                          2'b00;
+	// assign G =	goose_region                        ?   B_goose :
+ //              (boundary && curr_board[location]) 	? 	2'b00 :
+	// 			      (boundary && !curr_board[location]) ? 	2'b10 :
+ //        		  visible                           	? 	2'b10 :
+	// 													                          2'b00;
+	// assign B =	goose_region                        ?   G_goose :
+ //              (boundary && curr_board[location]) 	? 	2'b00 :
+	// 			      (boundary && !curr_board[location]) ? 	2'b10 :
+ //        		  visible                           	? 	2'b10 :
+	// 													                          2'b00;
 
 //======================= LOGIC ================================//
     reg [5:0] frame_count;
@@ -296,10 +308,12 @@ integer geese_frame = 0;
 	reg [BIT_WIDTH + BIT_HEIGHT : 0] i;
     reg [3:0] neighbours;
     reg [1:0] test;
-	always @(posedge reset) begin
+	always @(posedge vsync) begin
         // set initial state
       // U
+		if(test == 0) begin
       curr_board[3] <= 1;
+		end
       // curr_board[6] <= 1;
       // curr_board[19] <= 1;
       // curr_board[22] <= 1;
@@ -431,16 +445,16 @@ integer geese_frame = 0;
 		          		neighbours = neighbours + 1;
 					if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH + 1] == 1)
 		          		neighbours = neighbours + 1;
-					if (prev_board[i[BIT_WIDTH + BIT_HEIGHT -1:0]] == 1) begin
+					if (prev_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] == 1) begin
 						if (neighbours == 2 || neighbours == 3)
-							curr_board[i[BIT_WIDTH + BIT_HEIGHT -1:0]] = 1;
+							curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = 1;
 						else
-							curr_board[i[BIT_WIDTH + BIT_HEIGHT -1:0]] = 0;
+							curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = 0;
 					end else begin
 						if (neighbours == 3)
-							curr_board[i[BIT_WIDTH + BIT_HEIGHT -1:0]] = 1;
+							curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = 1;
 						else
-							curr_board[i[BIT_WIDTH + BIT_HEIGHT -1:0]] = 0;
+							curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = 0;
 					end
 				end
 				frame_count <= 0;
