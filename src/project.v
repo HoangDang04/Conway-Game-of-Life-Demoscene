@@ -5,7 +5,7 @@
 
 `default_nettype none
 
-module tt_um_vga_example (
+module tt_um_example (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: Input path
@@ -19,7 +19,6 @@ module tt_um_vga_example (
     wire hsync, vsync;
     wire [1:0] R, G, B;
     wire [9:0] hpos, vpos;
-    wire video_active;
     
     // Start/ Stop simulations
     wire run = ~ui_in[0];    // This only works when you hit ui_in
@@ -34,15 +33,14 @@ module tt_um_vga_example (
 
 	wire _unused = &{ena, clk, 1'b0, ui_in[7:2], uio_in};
 
-    hvsync_generator hvsync_gen(
-    .clk(clk),
-    .reset(~rst_n),
-    .hsync(hsync),
-    .vsync(vsync),
-    .display_on(video_active),
-    .hpos(hpos),
-    .vpos(vpos)
-  );
+    vga_sync vga_synchronize(
+        .hsync(hsync),
+        .vsync(vsync),
+        .vpos(vpos),
+        .hpos(hpos),
+        .clk(clk),
+        .reset(~rst_n)
+    );
     // =============REGISTER SIZE OF THE BOARD=================//
     localparam BIT_WIDTH = 3, BIT_HEIGHT = 3;
     localparam BOARD_WIDTH = 2 ** BIT_WIDTH;
