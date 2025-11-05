@@ -5,7 +5,7 @@
 
 `default_nettype none
 
-module tt_um_example (
+module tt_um_vga_example (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: Input path
@@ -19,6 +19,7 @@ module tt_um_example (
     wire hsync, vsync;
     wire [1:0] R, G, B;
     wire [9:0] hpos, vpos;
+    wire video_active;
     
     // Start/ Stop simulations
     wire run = ~ui_in[0];    // This only works when you hit ui_in
@@ -33,14 +34,15 @@ module tt_um_example (
 
 	wire _unused = &{ena, clk, 1'b0, ui_in[7:2], uio_in};
 
-    vga_sync vga_synchronize(
-        .hsync(hsync),
-        .vsync(vsync),
-        .vpos(vpos),
-        .hpos(hpos),
-        .clk(clk),
-        .reset(~rst_n)
-    );
+    hvsync_generator hvsync_gen(
+    .clk(clk),
+    .reset(~rst_n),
+    .hsync(hsync),
+    .vsync(vsync),
+    .display_on(video_active),
+    .hpos(hpos),
+    .vpos(vpos)
+  );
     // =============REGISTER SIZE OF THE BOARD=================//
     localparam BIT_WIDTH = 3, BIT_HEIGHT = 3;
     localparam BOARD_WIDTH = 2 ** BIT_WIDTH;
@@ -302,130 +304,36 @@ module tt_um_example (
 
 //======================= LOGIC ================================//
     reg [5:0] frame_count;
-	
+    reg[1:0] state;
 	reg [BIT_WIDTH + BIT_HEIGHT : 0] i;
-    wire [3:0] neighbours;
+    // reg [3:0] neighbours;
     reg [1:0] test;
 	always @(posedge vsync) begin
-        // set initial state
-      // U
 		if(test == 0) begin
       curr_board[3] <= 1;
+      curr_board[11] <= 1;
+      curr_board[12] <= 1;
+      curr_board[20] <= 1;
+      curr_board[21] <= 1;
+      curr_board[18] <= 1;
+      curr_board[19] <= 1;
 		end
-      // curr_board[6] <= 1;
-      // curr_board[19] <= 1;
-      // curr_board[22] <= 1;
-      // curr_board[35] <= 1;
-      // curr_board[38] <= 1;
-      // curr_board[52] <= 1;
-      // curr_board[53] <= 1;
-
-      // // W
-      // curr_board[8] <= 1;
-      // curr_board[12] <= 1;
-      // curr_board[24] <= 1;
-      // curr_board[28] <= 1;
-      // curr_board[40] <= 1;
-      // curr_board[42] <= 1;
-      // curr_board[44] <= 1;
-      // curr_board[57] <= 1;
-      // curr_board[59] <= 1;
-
-      // // E(1)
-      // curr_board[82] <= 1;
-      // curr_board[83] <= 1;
-      // curr_board[84] <= 1;
-      // curr_board[98] <= 1;
-      // curr_board[114] <= 1;
-      // curr_board[115] <= 1;
-      // curr_board[130] <= 1;
-      // curr_board[146] <= 1;
-      // curr_board[147] <= 1;
-      // curr_board[148] <= 1;
-
-      // // C
-      // curr_board[87] <= 1;
-      // curr_board[88] <= 1;
-      // curr_board[103] <= 1;
-      // curr_board[119] <= 1;
-      // curr_board[135] <= 1;
-      // curr_board[151] <= 1;
-      // curr_board[152] <= 1;
-
-      // // E(2)
-      // curr_board[91] <= 1;
-      // curr_board[92] <= 1;
-      // curr_board[93] <= 1;
-      // curr_board[107] <= 1;
-      // curr_board[123] <= 1;
-      // curr_board[124] <= 1;
-      // curr_board[139] <= 1;
-      // curr_board[155] <= 1;
-      // curr_board[156] <= 1;
-      // curr_board[157] <= 1;
-
-      // // 2
-      // curr_board[176] <= 1;
-      // curr_board[177] <= 1;
-      // curr_board[178] <= 1;
-      // curr_board[194] <= 1;
-      // curr_board[208] <= 1;
-      // curr_board[209] <= 1;
-      // curr_board[210] <= 1;
-      // curr_board[224] <= 1;
-      // curr_board[240] <= 1;
-      // curr_board[241] <= 1;
-      // curr_board[242] <= 1;
-
-      // // 9
-      // curr_board[180] <= 1;
-      // curr_board[181] <= 1;
-      // curr_board[182] <= 1;
-      // curr_board[196] <= 1;
-      // curr_board[198] <= 1;
-      // curr_board[212] <= 1;
-      // curr_board[213] <= 1;
-      // curr_board[214] <= 1;
-      // curr_board[230] <= 1;
-      // curr_board[246] <= 1;
-
-      // // 8
-      // curr_board[184] <= 1;
-      // curr_board[185] <= 1;
-      // curr_board[186] <= 1;
-      // curr_board[200] <= 1;
-      // curr_board[202] <= 1;
-      // curr_board[216] <= 1;
-      // curr_board[217] <= 1;
-      // curr_board[218] <= 1;
-      // curr_board[232] <= 1;
-      // curr_board[234] <= 1;
-      // curr_board[248] <= 1;
-      // curr_board[249] <= 1;
-      // curr_board[250] <= 1;
-
-      // // A
-      // curr_board[189] <= 1;
-      // curr_board[190] <= 1;
-      // curr_board[191] <= 1;
-      // curr_board[205] <= 1;
-      // curr_board[207] <= 1;
-      // curr_board[221] <= 1;
-      // curr_board[222] <= 1;
-      // curr_board[223] <= 1;
-      // curr_board[237] <= 1;
-      // curr_board[239] <= 1;
-      // curr_board[253] <= 1;
-      // curr_board[255] <= 1;
-	
       test <= 1;
     end
 	always @(posedge vsync) begin
 		if(test == 1 && run == 1) begin
 			if (frame_count == 60) begin
-				for (i = 0; i <= SIZE - 1; i++) 
-		        	prev_board[i[BIT_WIDTH + BIT_HEIGHT -1:0]] = curr_board[i[BIT_WIDTH + BIT_HEIGHT -1:0]];
-				for (i = 0; i <= SIZE - 1; i++) begin
+        state <= 0;
+        case (state)
+          0: begin
+            for (i = 0; i <= SIZE - 1; i++) 
+		        	prev_board[i[BIT_WIDTH + BIT_HEIGHT -1:0]] <= curr_board[i[BIT_WIDTH + BIT_HEIGHT -1:0]];
+            state <= 1;
+          end
+          1: begin
+            for (i = 0; i <= SIZE - 1; i++) begin
+              integer neighbours;
+              neighbours = 0;
 					neighbours =	((i > BOARD_WIDTH - 1 && i % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH - 1]) ? 1 : 0) +
 									((i > BOARD_WIDTH - 1 && prev_board[i - BOARD_WIDTH]) ? 1 : 0) +
 									((i > BOARD_WIDTH - 1 && (i + 1) % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH + 1]) ? 1 : 0) +
@@ -434,11 +342,14 @@ module tt_um_example (
 									((i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && i % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH - 1]) ? 1 : 0) +
 									((i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && prev_board[i + BOARD_WIDTH]) ? 1 : 0) +
 									((i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH + 1]) ? 1 : 0);
+          
     			if (prev_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] == 1)
-        			curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = (neighbours == 2 || neighbours == 3);
+        			curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] <= (neighbours == 2 || neighbours == 3);
     			else
-        			curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] = (neighbours == 3);
+        			curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] <= (neighbours == 3);
 				end
+          end
+        endcase
 					frame_count <= 0;
 			end else
 			frame_count <= frame_count + 1;
