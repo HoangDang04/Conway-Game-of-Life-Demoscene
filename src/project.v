@@ -43,6 +43,7 @@ module tt_um_example (
       .reset(~rst_n)
   );
 
+
   // =============REGISTER SIZE OF THE BOARD=================//
   localparam BIT_WIDTH = 3, BIT_HEIGHT = 3;
   localparam BOARD_WIDTH = 2 ** BIT_WIDTH;
@@ -70,28 +71,76 @@ module tt_um_example (
   reg vga_source;
   wire vga_value = vga_source ? prev_board[location] :
                                 curr_board[location];
-  // Compute wheres the location of the cell in the board
+  // Compute location of the cell on the board
   wire [BIT_WIDTH + BIT_HEIGHT - 1: 0] location = (column_index * BOARD_WIDTH) + row_index;
-  //Genrate RGB signals for the board
-	assign R =	(boundary && vga_value) 	? 	2'b00 :
+  // Generate RGB signals for the board
+	assign R =	(boundary && vga_value)  ? 	2'b00 :
 				      (boundary && !vga_value) ? 	2'b10 :
-        	   	visible                           	? 	2'b01 :
-														                          2'b00;
-	assign G =	(boundary && vga_value) 	? 	2'b00 :
+        	   	visible                  ? 	2'b01 :
+														              2'b00;
+	assign G =	(boundary && vga_value)  ? 	2'b00 :
 				      (boundary && !vga_value) ? 	2'b10 :
-        		  visible                           	? 	2'b10 :
-														                          2'b00;
-	assign B =	(boundary && vga_value) 	? 	2'b00 :
+        		  visible                  ? 	2'b10 :
+														              2'b00;
+	assign B =	(boundary && vga_value)  ?  2'b00 :
 				      (boundary && !vga_value) ? 	2'b10 :
-        		  visible                           	? 	2'b10 :
-														                          2'b00;
+        		  visible                  ? 	2'b10 :
+														              2'b00;
 
 //======================= LOGIC ================================//
 	reg [BIT_WIDTH + BIT_HEIGHT : 0] i;
   reg [3:0] neighbours;
-  reg test;
+
 	always @(posedge vsync) begin
-		if(test == 0) begin
+		if(reset == 0) begin
+      curr_board[1] <= 0;
+      curr_board[2] <= 0;
+      curr_board[4] <= 0;
+      curr_board[5] <= 0;
+      curr_board[6] <= 0;
+      curr_board[7] <= 0;
+      curr_board[9] <= 0;
+      curr_board[10] <= 0;
+      curr_board[12] <= 0;
+      curr_board[13] <= 0;
+      curr_board[14] <= 0;
+      curr_board[15] <= 0;
+      curr_board[17] <= 0;
+      curr_board[18] <= 0;
+      curr_board[20] <= 0;
+      curr_board[21] <= 0;
+      curr_board[22] <= 0;
+      curr_board[23] <= 0;
+      curr_board[24] <= 0;
+      curr_board[27] <= 0;
+      curr_board[28] <= 0;
+      curr_board[29] <= 0;
+      curr_board[30] <= 0;
+      curr_board[31] <= 0;
+      curr_board[32] <= 0;
+      curr_board[33] <= 0;
+      curr_board[34] <= 0;
+      curr_board[36] <= 0;
+      curr_board[37] <= 0;
+      curr_board[38] <= 0;
+      curr_board[40] <= 0;
+      curr_board[41] <= 0;
+      curr_board[42] <= 0;
+      curr_board[44] <= 0;
+      curr_board[45] <= 0;
+      curr_board[46] <= 0;
+      curr_board[48] <= 0;
+      curr_board[49] <= 0;
+      curr_board[50] <= 0;
+      curr_board[52] <= 0;
+      curr_board[54] <= 0;
+      curr_board[56] <= 0;
+      curr_board[57] <= 0;
+      curr_board[58] <= 0;
+      curr_board[59] <= 0;
+      curr_board[61] <= 0;
+      curr_board[63] <= 0;
+
       // U
       curr_board[0] <= 1;
       curr_board[3] <= 1;
@@ -114,9 +163,8 @@ module tt_um_example (
       curr_board[62] <= 1;
 
       vga_source <= 0;
-	
-      test <= 1;
-    end else begin
+      i <= 0;
+    end else if (run == 1) begin
       if (vga_source == 0) begin
         prev_board[i] <= curr_board[i];
       end else begin
