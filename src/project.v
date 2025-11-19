@@ -64,63 +64,79 @@ module tt_um_example (
                   (vpos >= BACKGROUND_HEIGHT/2);
   wire visible = (hpos < 640) && (vpos < 480);
   // Assign which cell this pixel belongs to
-  wire [BIT_WIDTH - 1: 0] row_index;
-  wire [BIT_HEIGHT - 1: 0] column_index;
-  assign row_index = (hpos - BACKGROUND_WIDTH/2) / CELL_SIZE;
-  assign column_index = (vpos - BACKGROUND_HEIGHT/2) / CELL_SIZE;
+  wire [BIT_WIDTH - 1: 0] row_index = (hpos - BACKGROUND_WIDTH/2) / CELL_SIZE;
+  wire [BIT_HEIGHT - 1: 0] column_index = (vpos - BACKGROUND_HEIGHT/2) / CELL_SIZE;
+
+  reg vga_source;
+  wire vga_value = vga_source ? curr_board[location] :
+                                  prev_board[location];
   // Compute wheres the location of the cell in the board
   wire [BIT_WIDTH + BIT_HEIGHT - 1: 0] location = (column_index * BOARD_WIDTH) + row_index;
   //Genrate RGB signals for the board
-	assign R =	(boundary && curr_board[location]) 	? 	2'b00 :
-				      (boundary && !curr_board[location]) ? 	2'b10 :
+	assign R =	(boundary && vga_value) 	? 	2'b00 :
+				      (boundary && !vga_value) ? 	2'b10 :
         	   	visible                           	? 	2'b01 :
 														                          2'b00;
-	assign G =	(boundary && curr_board[location]) 	? 	2'b00 :
-				      (boundary && !curr_board[location]) ? 	2'b10 :
+	assign G =	(boundary && vga_value) 	? 	2'b00 :
+				      (boundary && !vga_value) ? 	2'b10 :
         		  visible                           	? 	2'b10 :
 														                          2'b00;
-	assign B =	(boundary && curr_board[location]) 	? 	2'b00 :
-				      (boundary && !curr_board[location]) ? 	2'b10 :
+	assign B =	(boundary && vga_value) 	? 	2'b00 :
+				      (boundary && !vga_value) ? 	2'b10 :
         		  visible                           	? 	2'b10 :
 														                          2'b00;
 
 //======================= LOGIC ================================//
-  reg [5:0] frame_count;
 	reg [BIT_WIDTH + BIT_HEIGHT : 0] i;
   reg [3:0] neighbours;
-  reg [1:0] test;
+  reg test;
 	always @(posedge vsync) begin
-		if(frame_count == 0 && test == 0) begin
+		if(test == 0) begin
+      // create desin
       curr_board[3] <= 1;
+      curr_board[4] <= 1;
+      curr_board[5] <= 1;
+      vga_source <= 1;
 	
       test <= 1;
     end
-			if (frame_count == 60) begin
-				for (i = 0; i <= SIZE - 1; i++) 
-		        	prev_board[i] = curr_board[i];
-				for (i = 0; i <= SIZE - 1; i++) begin
-          neighbours = (i > BOARD_WIDTH - 1 && i % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH - 1])
-                     + (i > BOARD_WIDTH - 1 && prev_board[i - BOARD_WIDTH])
-                     + (i > BOARD_WIDTH - 1 && (i + 1) % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH + 1])
-                     + (i % BOARD_WIDTH != 0 && prev_board[i - 1])
-                     + ((i + 1) % BOARD_WIDTH != 0 && prev_board[i + 1])
-                     + (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && i % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH - 1])
-                     + (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && prev_board[i + BOARD_WIDTH])
-                     + (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH + 1])
-					if (prev_board[i] == 1) begin
-						if (neighbours == 2 || neighbours == 3)
-							curr_board[i] = 1;
-						else
-							curr_board[i] = 0;
-					end else begin
-						if (neighbours == 3)
-							curr_board[i] = 1;
-						else
-							curr_board[i] = 0;
-					end
-				end
-				frame_count <= 0;
-			end else
-				frame_count <= frame_count + 1;
+    if (vga_source == 1) begin
+      prev_board[i] <= curr_board[i];
+    end else begin
+        neighbours = 0;
+        if (i > BOARD_WIDTH - 1 && i % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH - 1] == 1)
+                neighbours = neighbours + 1;
+        if (i > BOARD_WIDTH - 1 && prev_board[i - BOARD_WIDTH] == 1)
+                neighbours = neighbours + 1;
+        if (i > BOARD_WIDTH - 1 && (i + 1) % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH + 1] == 1)
+                neighbours = neighbours + 1;
+        if (i % BOARD_WIDTH != 0 && prev_board[i - 1] == 1)
+                neighbours = neighbours + 1;
+        if ((i + 1) % BOARD_WIDTH != 0 && prev_board[i + 1] == 1)
+                neighbours = neighbours + 1;
+        if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && i % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH - 1] == 1)
+                neighbours = neighbours + 1;
+        if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && prev_board[i + BOARD_WIDTH] == 1)
+                neighbours = neighbours + 1;
+        if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH + 1] == 1)
+                neighbours = neighbours + 1;
+        if (prev_board[i] == 1) begin
+          if (neighbours == 2 || neighbours == 3)
+            curr_board[i] <= 1;
+          else
+            curr_board[i] <= 0;
+        end else begin
+          if (neighbours == 3)
+            curr_board[i] <= 1;
+          else
+            curr_board[i] <= 0;
+        end
+      end
+
+      if (i == (BOARD_HEIGHT * BOARD_WIDTH) - 1) begin
+        i <= 0;
+        vga_source <= ~vga_source;
+      end else
+        i <= i + 1;
 	end
 endmodule
