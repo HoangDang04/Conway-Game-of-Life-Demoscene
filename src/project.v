@@ -68,8 +68,8 @@ module tt_um_example (
   wire [BIT_HEIGHT - 1: 0] column_index = (vpos - BACKGROUND_HEIGHT/2) / CELL_SIZE;
 
   reg vga_source;
-  wire vga_value = vga_source ? curr_board[location] :
-                                  prev_board[location];
+  wire vga_value = vga_source ? prev_board[location] :
+                                curr_board[location];
   // Compute wheres the location of the cell in the board
   wire [BIT_WIDTH + BIT_HEIGHT - 1: 0] location = (column_index * BOARD_WIDTH) + row_index;
   //Genrate RGB signals for the board
@@ -92,51 +92,69 @@ module tt_um_example (
   reg test;
 	always @(posedge vsync) begin
 		if(test == 0) begin
-      // create desin
+      // U
+      curr_board[0] <= 1;
       curr_board[3] <= 1;
-      curr_board[4] <= 1;
-      curr_board[5] <= 1;
-      vga_source <= 1;
+      curr_board[8] <= 1;
+      curr_board[11] <= 1;
+      curr_board[16] <= 1;
+      curr_board[19] <= 1;
+      curr_board[25] <= 1;
+      curr_board[26] <= 1;
+
+      // W
+      curr_board[35] <= 1;
+      curr_board[39] <= 1;
+      curr_board[43] <= 1;
+      curr_board[47] <= 1;
+      curr_board[51] <= 1;
+      curr_board[53] <= 1;
+      curr_board[55] <= 1;
+      curr_board[60] <= 1;
+      curr_board[62] <= 1;
+
+      vga_source <= 0;
 	
       test <= 1;
-    end
-    if (vga_source == 1) begin
-      prev_board[i] <= curr_board[i];
     end else begin
-        neighbours = 0;
-        if (i > BOARD_WIDTH - 1 && i % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH - 1] == 1)
-                neighbours = neighbours + 1;
-        if (i > BOARD_WIDTH - 1 && prev_board[i - BOARD_WIDTH] == 1)
-                neighbours = neighbours + 1;
-        if (i > BOARD_WIDTH - 1 && (i + 1) % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH + 1] == 1)
-                neighbours = neighbours + 1;
-        if (i % BOARD_WIDTH != 0 && prev_board[i - 1] == 1)
-                neighbours = neighbours + 1;
-        if ((i + 1) % BOARD_WIDTH != 0 && prev_board[i + 1] == 1)
-                neighbours = neighbours + 1;
-        if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && i % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH - 1] == 1)
-                neighbours = neighbours + 1;
-        if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && prev_board[i + BOARD_WIDTH] == 1)
-                neighbours = neighbours + 1;
-        if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH + 1] == 1)
-                neighbours = neighbours + 1;
-        if (prev_board[i] == 1) begin
-          if (neighbours == 2 || neighbours == 3)
-            curr_board[i] <= 1;
-          else
-            curr_board[i] <= 0;
-        end else begin
-          if (neighbours == 3)
-            curr_board[i] <= 1;
-          else
-            curr_board[i] <= 0;
+      if (vga_source == 0) begin
+        prev_board[i] <= curr_board[i];
+      end else begin
+          neighbours = 0;
+          if (i > BOARD_WIDTH - 1 && i % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH - 1] == 1)
+                  neighbours = neighbours + 1;
+          if (i > BOARD_WIDTH - 1 && prev_board[i - BOARD_WIDTH] == 1)
+                  neighbours = neighbours + 1;
+          if (i > BOARD_WIDTH - 1 && (i + 1) % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH + 1] == 1)
+                  neighbours = neighbours + 1;
+          if (i % BOARD_WIDTH != 0 && prev_board[i - 1] == 1)
+                  neighbours = neighbours + 1;
+          if ((i + 1) % BOARD_WIDTH != 0 && prev_board[i + 1] == 1)
+                  neighbours = neighbours + 1;
+          if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && i % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH - 1] == 1)
+                  neighbours = neighbours + 1;
+          if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && prev_board[i + BOARD_WIDTH] == 1)
+                  neighbours = neighbours + 1;
+          if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH + 1] == 1)
+                  neighbours = neighbours + 1;
+          if (prev_board[i] == 1) begin
+            if (neighbours == 2 || neighbours == 3)
+              curr_board[i] <= 1;
+            else
+              curr_board[i] <= 0;
+          end else begin
+            if (neighbours == 3)
+              curr_board[i] <= 1;
+            else
+              curr_board[i] <= 0;
+          end
         end
-      end
 
-      if (i == (BOARD_HEIGHT * BOARD_WIDTH) - 1) begin
-        i <= 0;
-        vga_source <= ~vga_source;
-      end else
-        i <= i + 1;
+        if (i == 63) begin
+          i <= 0;
+          vga_source <= ~vga_source;
+        end else
+          i <= i + 1;
+    end
 	end
 endmodule
