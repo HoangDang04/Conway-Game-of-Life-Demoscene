@@ -99,23 +99,14 @@ module tt_um_example (
 				for (i = 0; i <= SIZE - 1; i++) 
 		        	prev_board[i] = curr_board[i];
 				for (i = 0; i <= SIZE - 1; i++) begin
-		        	neighbours = 0;
-					if (i > BOARD_WIDTH - 1 && i % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH - 1] == 1)
-		          		neighbours = neighbours + 1;
-		        	if (i > BOARD_WIDTH - 1 && prev_board[i - BOARD_WIDTH] == 1)
-		          		neighbours = neighbours + 1;
-					if (i > BOARD_WIDTH - 1 && (i + 1) % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH + 1] == 1)
-		          		neighbours = neighbours + 1;
-					if (i % BOARD_WIDTH != 0 && prev_board[i - 1] == 1)
-		          		neighbours = neighbours + 1;
-					if ((i + 1) % BOARD_WIDTH != 0 && prev_board[i + 1] == 1)
-		          		neighbours = neighbours + 1;
-					if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && i % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH - 1] == 1)
-		          		neighbours = neighbours + 1;
-					if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && prev_board[i + BOARD_WIDTH] == 1)
-		          		neighbours = neighbours + 1;
-					if (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH + 1] == 1)
-		          		neighbours = neighbours + 1;
+          neighbours = (i > BOARD_WIDTH - 1 && i % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH - 1])
+                     + (i > BOARD_WIDTH - 1 && prev_board[i - BOARD_WIDTH])
+                     + (i > BOARD_WIDTH - 1 && (i + 1) % BOARD_WIDTH != 0 && prev_board[i - BOARD_WIDTH + 1])
+                     + (i % BOARD_WIDTH != 0 && prev_board[i - 1])
+                     + ((i + 1) % BOARD_WIDTH != 0 && prev_board[i + 1])
+                     + (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && i % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH - 1])
+                     + (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && prev_board[i + BOARD_WIDTH])
+                     + (i < BOARD_WIDTH * (BOARD_HEIGHT - 1) && (i + 1) % BOARD_WIDTH != 0 && prev_board[i + BOARD_WIDTH + 1])
 					if (prev_board[i] == 1) begin
 						if (neighbours == 2 || neighbours == 3)
 							curr_board[i] = 1;
