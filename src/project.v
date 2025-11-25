@@ -50,7 +50,7 @@ module tt_um_example (
   localparam BOARD_HEIGHT = 2 ** BIT_HEIGHT;
   localparam SIZE = BOARD_WIDTH * BOARD_HEIGHT;
   
-  localparam CELL_SIZE = 24;
+  localparam CELL_SIZE = 50;
   localparam BACKGROUND_HEIGHT = 480 - (CELL_SIZE * BOARD_HEIGHT);     // how much left of BIT_HEIGHT in the background
   localparam BACKGROUND_WIDTH = 640 - (CELL_SIZE * BOARD_WIDTH);    // how much left of BIT_WIDTH in the background
 
@@ -65,14 +65,16 @@ module tt_um_example (
                   (vpos >= BACKGROUND_HEIGHT/2);
   wire visible = (hpos < 640) && (vpos < 480);
   // Assign which cell this pixel belongs to
-  wire [BIT_WIDTH - 1: 0] row_index = (hpos - BACKGROUND_WIDTH/2) / CELL_SIZE;
-  wire [BIT_HEIGHT - 1: 0] column_index = (vpos - BACKGROUND_HEIGHT/2) / CELL_SIZE;
+  wire [9 : 0] row_index = (hpos - BACKGROUND_WIDTH/2) / CELL_SIZE;
+  wire [9 : 0] column_index = (vpos - BACKGROUND_HEIGHT/2) / CELL_SIZE;
 
   reg vga_source;
-  wire vga_value = vga_source ? prev_board[location] :
-                                curr_board[location];
+  wire vga_value = vga_source ? prev_board[location[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] :
+                                curr_board[location[BIT_WIDTH + BIT_HEIGHT - 1 : 0]];
   // Compute location of the cell on the board
-  wire [BIT_WIDTH + BIT_HEIGHT - 1: 0] location = (column_index * BOARD_WIDTH) + row_index;
+  wire [9 : 0] location = (column_index * BOARD_WIDTH) + row_index;
+  wire _unused_location = &location[9:6];
+
   // Generate RGB signals for the board
 	assign R =	(boundary && vga_value)  ? 	2'b00 :
 				      (boundary && !vga_value) ? 	2'b10 :
@@ -91,7 +93,7 @@ module tt_um_example (
 	reg [BIT_WIDTH + BIT_HEIGHT : 0] i;
   reg [3:0] neighbours;
 
-  wire [BIT_WIDTH + BIT_HEIGHT - 1 : 0] iter = (vga_source == 1 && i < 63) ? i + 1 : 6'b0;
+  wire [BIT_WIDTH + BIT_HEIGHT - 1 : 0] iter = (vga_source == 1 && i < 63) ? i[BIT_WIDTH + BIT_HEIGHT - 1 : 0] + 1 : 6'b0;
 
   wire not_top    = (iter > BOARD_WIDTH - 1);
   wire not_bottom = (iter < BOARD_WIDTH * (BOARD_HEIGHT - 1));
@@ -173,18 +175,18 @@ module tt_um_example (
       i <= 0;
     end else if (run == 1) begin
       if (vga_source == 0) begin
-          prev_board[i] <= curr_board[i];
+          prev_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] <= curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]];
       end else begin
-        if (prev_board[i] == 1) begin
+        if (prev_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] == 1) begin
           if (neighbours == 2 || neighbours == 3)
-            curr_board[i] <= 1;
+            curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] <= 1;
           else
-            curr_board[i] <= 0;
+            curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] <= 0;
         end else begin
           if (neighbours == 3)
-            curr_board[i] <= 1;
+            curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] <= 1;
           else
-            curr_board[i] <= 0;
+            curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] <= 0;
         end
       end
 
