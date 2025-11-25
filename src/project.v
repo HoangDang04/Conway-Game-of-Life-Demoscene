@@ -75,18 +75,23 @@ module tt_um_example (
   wire [9 : 0] location = (column_index * BOARD_WIDTH) + row_index;
   wire _unused_location = &location[9:6];
 
+  // wire [1:0] red_bg = (vga_source);
+  // wire [1:0] green_bg = (vga_source);
+  reg [1:0] bg_tracker;
+  wire [1:0] blue_bg = (row_index[1:0] + bg_tracker);
+
   // Generate RGB signals for the board
-	assign R =	(boundary && vga_value)  ? 	2'b00 :
-				      (boundary && !vga_value) ? 	2'b10 :
-        	   	visible                  ? 	2'b01 :
+	assign R =	(boundary && vga_value)  ? 	2'b11 :
+				      (boundary && !vga_value) ? 	2'b11 :
+        	   	visible                  ? 	2'b00 :
 														              2'b00;
-	assign G =	(boundary && vga_value)  ? 	2'b00 :
-				      (boundary && !vga_value) ? 	2'b10 :
-        		  visible                  ? 	2'b10 :
+	assign G =	(boundary && vga_value)  ? 	2'b01 :
+				      (boundary && !vga_value) ? 	2'b11 :
+        		  visible                  ? 	2'b00 :
 														              2'b00;
 	assign B =	(boundary && vga_value)  ?  2'b00 :
-				      (boundary && !vga_value) ? 	2'b10 :
-        		  visible                  ? 	2'b10 :
+				      (boundary && !vga_value) ? 	2'b11 :
+        		  visible                  ? 	blue_bg :
 														              2'b00;
 
 //======================= LOGIC ================================//
@@ -200,6 +205,7 @@ module tt_um_example (
                   + ((not_bottom && not_right && prev_board[iter + BOARD_WIDTH + 1]) ? 4'b0001 : 4'b0000);
 
       if (i == 63) begin
+        bg_tracker <= bg_tracker + 1;
         i <= 0;
         vga_source <= ~vga_source;
       end else
