@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2024 Uri Shaked
+ * Copyright (c) 2024 Your Name
  * SPDX-License-Identifier: Apache-2.0
  */
 
 `default_nettype none
 
-module tt_um_vga_example(
+module tt_um_vga_example (
   input  wire [7:0] ui_in,    // Dedicated inputs
   output wire [7:0] uo_out,   // Dedicated outputs
   input  wire [7:0] uio_in,   // IOs: Input path
@@ -17,227 +17,201 @@ module tt_um_vga_example(
 );
 
   // VGA signals
-  wire hsync;
-  wire vsync;
-  wire [1:0] red;
-  wire [1:0] green;
-  wire [1:0] blue;
-  wire video_active;
-  wire [9:0] vpos;
-  wire [9:0] hpos;
-  wire sound;
+  wire hsync, vsync;
+  wire [1:0] R, G, B;
+  wire [9:0] hpos, vpos;
+  
+  // Start/ Stop simulations
+  wire run = ~ui_in[0];    // This only works when you hit ui_in
+  wire reset = ~ui_in[1];
 
-  hvsync_generator hvsync_gen(
-  .clk(clk),
-  .reset(~rst_n),
-  .hsync(hsync),
-  .vsync(vsync),
-  .display_on(video_active),
-  .hpos(hpos),
-  .vpos(vpos)
-);
+  // assign output
+  assign uo_out = {hsync, B[0], G[0], R[0], vsync, B[1], G[1], R[1]};
 
-  // TinyVGA PMOD
-  assign uo_out = {hsync, blue[0], green[0], red[0], vsync, blue[1], green[1], red[1]};
-
-  // Unused outputs assigned to 0.
+  // Unused outputs assigned to 0
   assign uio_out = 0;
-  assign uio_oe  = 0;
+  assign uio_oe = 0;
 
-  // Suppress unused signals warning
-  wire _unused_ok = &{ena, ui_in, uio_in};
+  wire _unused = &{ena, clk, 1'b0, ui_in[7:2], uio_in};
 
-  localparam BitWidthTotal = 640;
-  localparam BitHeightTotal = 480;
+  wire video_active;
+  hvsync_generator hvsync_gen(
+    .clk(clk),
+    .reset(~rst_n),
+    .hsync(hsync),
+    .vsync(vsync),
+    .display_on(video_active),
+    .hpos(hpos),
+    .vpos(vpos)
+  );
+  
 
-  localparam CellWidth = 16;
-  localparam CellHeight = 16;
-  localparam CellSize = 16*16 - 1;
-  localparam BitWidth = 24;
-  localparam BitHeight = 24;
+  // =============REGISTER SIZE OF THE BOARD=================//
+  localparam BIT_WIDTH = 3, BIT_HEIGHT = 3;
+  localparam BOARD_WIDTH = 2 ** BIT_WIDTH;
+  localparam BOARD_HEIGHT = 2 ** BIT_HEIGHT;
+  localparam SIZE = BOARD_WIDTH * BOARD_HEIGHT;
+  
+  localparam CELL_SIZE = 50;
+  localparam BACKGROUND_HEIGHT = 480 - (CELL_SIZE * BOARD_HEIGHT);     // how much left of BIT_HEIGHT in the background
+  localparam BACKGROUND_WIDTH = 640 - (CELL_SIZE * BOARD_WIDTH);    // how much left of BIT_WIDTH in the background
 
-  localparam StartWidth = (BitWidthTotal - (BitWidth * CellWidth))/2;
-  localparam EndWidth = BitWidthTotal - StartWidth - 1;
+  reg curr_board [0:SIZE-1];
+  reg prev_board [0:SIZE-1];
+  
+  //==================OTHER WIRE REGISTERS=====================//                                        
+  //Checking the region belongs to 640 x 480 board or not, boundary works as a boolean
+  wire boundary = (hpos < 640 - BACKGROUND_WIDTH/2) &&
+                  (hpos >= BACKGROUND_WIDTH/2) &&
+                  (vpos < 480 - BACKGROUND_HEIGHT/2) &&
+                  (vpos >= BACKGROUND_HEIGHT/2);
+  wire visible = (hpos < 640) && (vpos < 480);
+  // Assign which cell this pixel belongs to
+  wire [9:0] row_index = (hpos - BACKGROUND_WIDTH/2) / CELL_SIZE;
+  wire [9:0] column_index = (vpos - BACKGROUND_HEIGHT/2) / CELL_SIZE;
 
-  localparam StartHeight = (BitHeightTotal - (BitHeight * CellHeight))/2;
-  localparam EndHeight = BitHeightTotal - StartHeight - 1;
+  reg vga_source;
+  wire vga_value = vga_source ? prev_board[location[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] :
+                                curr_board[location[BIT_WIDTH + BIT_HEIGHT - 1 : 0]];
+  // Compute location of the cell on the board
+  wire [9:0] location = (column_index * BOARD_WIDTH) + row_index;
+  wire _unused_location = &location[9:6];
 
-  reg current_state [0:CellSize];
-  reg previous_state [0:CellSize];
+  wire [1:0] h_slice = hpos[6:5];
+  wire [1:0] v_slice = vpos[6:5];
+  reg [1:0] bg_tracker;
+  wire [1:0] blue_bg = h_slice + v_slice + bg_tracker;
 
-  wire is_border = (hpos < StartWidth || hpos > EndWidth || vpos < StartHeight || vpos > EndHeight) ? 1 : 0;
+  // Generate RGB signals for the board
+	assign R =	(boundary && vga_value)  ? 	2'b11 :
+				      (boundary && !vga_value) ? 	2'b11 :
+        	   	visible                  ? 	2'b00 :
+														              2'b00;
+	assign G =	(boundary && vga_value)  ? 	2'b00 :
+				      (boundary && !vga_value) ? 	2'b11 :
+        		  visible                  ? 	2'b00 :
+														              2'b00;
+	assign B =	(boundary && vga_value)  ?  2'b01 :
+				      (boundary && !vga_value) ? 	2'b11 :
+        		  visible                  ? 	blue_bg :
+														              2'b00;
 
-  wire not_visible = (hpos >= BitWidthTotal || vpos >= BitHeightTotal) ? 1 : 0;
-
-  wire [3:0] cell_x = (hpos - StartWidth) / BitHeight;
-  wire [3:0] cell_y = (vpos - StartHeight) / BitWidth;
-
-  wire [7:0] cell_index = (cell_y * CellWidth) + cell_x;
-
-  wire current_cell = current_state[cell_index];
-
-  assign red   = not_visible  ? 2'b00 :
-                 is_border    ? 2'b11 :
-                 current_cell ? 2'b00 :
-                                2'b11;
-  assign green = not_visible  ? 2'b00 :
-                 is_border    ? 2'b01 :
-                 current_cell ? 2'b00 :
-                                2'b11;
-  assign blue  = not_visible  ? 2'b00 :
-                 is_border    ? 2'b00 :
-                 current_cell ? 2'b00 :
-                                2'b11;
-
-  reg [5:0] frame_count;
-  reg [8:0] i;
-
+//======================= LOGIC ================================//
+  reg [BIT_WIDTH + BIT_HEIGHT - 1:0] i;
   reg [3:0] neighbours;
 
-  reg [1:0] test;
+  wire [BIT_WIDTH + BIT_HEIGHT - 1:0] iter = (vga_source == 1 && i < 63) ? i + 1 : 6'b0;
 
-  always @(posedge vsync) begin
-    // set initial state
-    if (frame_count == 0 && test == 0) begin
+  wire not_top    = (iter > BOARD_WIDTH - 1);
+  wire not_bottom = (iter < BOARD_WIDTH * (BOARD_HEIGHT - 1));
+  wire not_left   = (iter % BOARD_WIDTH != 0);
+  wire not_right  = ((iter + 1) % BOARD_WIDTH != 0);
+
+	always @(posedge vsync) begin
+		if(reset == 0) begin
+      curr_board[1] <= 0;
+      curr_board[2] <= 0;
+      curr_board[4] <= 0;
+      curr_board[5] <= 0;
+      curr_board[6] <= 0;
+      curr_board[7] <= 0;
+      curr_board[9] <= 0;
+      curr_board[10] <= 0;
+      curr_board[12] <= 0;
+      curr_board[13] <= 0;
+      curr_board[14] <= 0;
+      curr_board[15] <= 0;
+      curr_board[17] <= 0;
+      curr_board[18] <= 0;
+      curr_board[20] <= 0;
+      curr_board[21] <= 0;
+      curr_board[22] <= 0;
+      curr_board[23] <= 0;
+      curr_board[24] <= 0;
+      curr_board[27] <= 0;
+      curr_board[28] <= 0;
+      curr_board[29] <= 0;
+      curr_board[30] <= 0;
+      curr_board[31] <= 0;
+      curr_board[32] <= 0;
+      curr_board[33] <= 0;
+      curr_board[34] <= 0;
+      curr_board[36] <= 0;
+      curr_board[37] <= 0;
+      curr_board[38] <= 0;
+      curr_board[40] <= 0;
+      curr_board[41] <= 0;
+      curr_board[42] <= 0;
+      curr_board[44] <= 0;
+      curr_board[45] <= 0;
+      curr_board[46] <= 0;
+      curr_board[48] <= 0;
+      curr_board[49] <= 0;
+      curr_board[50] <= 0;
+      curr_board[52] <= 0;
+      curr_board[54] <= 0;
+      curr_board[56] <= 0;
+      curr_board[57] <= 0;
+      curr_board[58] <= 0;
+      curr_board[59] <= 0;
+      curr_board[61] <= 0;
+      curr_board[63] <= 0;
+
       // U
-      current_state[3] <= 1;
-      current_state[6] <= 1;
-      current_state[19] <= 1;
-      current_state[22] <= 1;
-      current_state[35] <= 1;
-      current_state[38] <= 1;
-      current_state[52] <= 1;
-      current_state[53] <= 1;
+      curr_board[0] <= 1;
+      curr_board[3] <= 1;
+      curr_board[8] <= 1;
+      curr_board[11] <= 1;
+      curr_board[16] <= 1;
+      curr_board[19] <= 1;
+      curr_board[25] <= 1;
+      curr_board[26] <= 1;
 
       // W
-      current_state[8] <= 1;
-      current_state[12] <= 1;
-      current_state[24] <= 1;
-      current_state[28] <= 1;
-      current_state[40] <= 1;
-      current_state[42] <= 1;
-      current_state[44] <= 1;
-      current_state[57] <= 1;
-      current_state[59] <= 1;
+      curr_board[35] <= 1;
+      curr_board[39] <= 1;
+      curr_board[43] <= 1;
+      curr_board[47] <= 1;
+      curr_board[51] <= 1;
+      curr_board[53] <= 1;
+      curr_board[55] <= 1;
+      curr_board[60] <= 1;
+      curr_board[62] <= 1;
 
-      // E(1)
-      current_state[82] <= 1;
-      current_state[83] <= 1;
-      current_state[84] <= 1;
-      current_state[98] <= 1;
-      current_state[114] <= 1;
-      current_state[115] <= 1;
-      current_state[130] <= 1;
-      current_state[146] <= 1;
-      current_state[147] <= 1;
-      current_state[148] <= 1;
-
-      // C
-      current_state[87] <= 1;
-      current_state[88] <= 1;
-      current_state[103] <= 1;
-      current_state[119] <= 1;
-      current_state[135] <= 1;
-      current_state[151] <= 1;
-      current_state[152] <= 1;
-
-      // E(2)
-      current_state[91] <= 1;
-      current_state[92] <= 1;
-      current_state[93] <= 1;
-      current_state[107] <= 1;
-      current_state[123] <= 1;
-      current_state[124] <= 1;
-      current_state[139] <= 1;
-      current_state[155] <= 1;
-      current_state[156] <= 1;
-      current_state[157] <= 1;
-
-      // 2
-      current_state[176] <= 1;
-      current_state[177] <= 1;
-      current_state[178] <= 1;
-      current_state[194] <= 1;
-      current_state[208] <= 1;
-      current_state[209] <= 1;
-      current_state[210] <= 1;
-      current_state[224] <= 1;
-      current_state[240] <= 1;
-      current_state[241] <= 1;
-      current_state[242] <= 1;
-
-      // 9
-      current_state[180] <= 1;
-      current_state[181] <= 1;
-      current_state[182] <= 1;
-      current_state[196] <= 1;
-      current_state[198] <= 1;
-      current_state[212] <= 1;
-      current_state[213] <= 1;
-      current_state[214] <= 1;
-      current_state[230] <= 1;
-      current_state[246] <= 1;
-
-      // 8
-      current_state[184] <= 1;
-      current_state[185] <= 1;
-      current_state[186] <= 1;
-      current_state[200] <= 1;
-      current_state[202] <= 1;
-      current_state[216] <= 1;
-      current_state[217] <= 1;
-      current_state[218] <= 1;
-      current_state[232] <= 1;
-      current_state[234] <= 1;
-      current_state[248] <= 1;
-      current_state[249] <= 1;
-      current_state[250] <= 1;
-
-      // A
-      current_state[189] <= 1;
-      current_state[190] <= 1;
-      current_state[191] <= 1;
-      current_state[205] <= 1;
-      current_state[207] <= 1;
-      current_state[221] <= 1;
-      current_state[222] <= 1;
-      current_state[223] <= 1;
-      current_state[237] <= 1;
-      current_state[239] <= 1;
-      current_state[253] <= 1;
-      current_state[255] <= 1;
-      test <= 1;
-    end
-
-    if (frame_count == 60) begin
-      for (i = 0; i <= 255; i++) 
-        previous_state[i] = current_state[i];
-      for (i = 0; i <= 255; i++) begin
-        neighbours = 0;
-        if (i > 15 && i % 16 != 0 && previous_state[i - 16 - 1] == 1)
-          neighbours = neighbours + 1;
-        if (i > 15 && previous_state[i - 16] == 1)
-          neighbours = neighbours + 1;
-        if (i > 15 && (i + 1) % 16 != 0 && previous_state[i - 16 + 1] == 1)
-          neighbours = neighbours + 1;
-        if (i % 16 != 0 && previous_state[i - 1] == 1)
-          neighbours = neighbours + 1;
-        if ((i + 1) % 16 != 0 && previous_state[i + 1] == 1)
-          neighbours = neighbours + 1;
-        if (i < 240 && i % 16 != 0 && previous_state[i + 16 - 1] == 1)
-          neighbours = neighbours + 1;
-        if (i < 240 && previous_state[i + 16] == 1)
-          neighbours = neighbours + 1;
-        if (i < 240 && (i + 1) % 16 != 0 && previous_state[i + 16 + 1] == 1)
-          neighbours = neighbours + 1;
-        if (neighbours == 2 || neighbours == 3)
-          current_state[i] = 1;
-        else 
-         current_state[i] = 0;
+      vga_source <= 0;
+      i <= 0;
+    end else if (run == 1) begin
+      if (vga_source == 0) begin
+          prev_board[i] <= curr_board[i];
+      end else begin
+        if (prev_board[i] == 1) begin
+          if (neighbours == 2 || neighbours == 3)
+            curr_board[i] <= 1;
+          else
+            curr_board[i] <= 0;
+        end else begin
+          if (neighbours == 3)
+            curr_board[i] <= 1;
+          else
+            curr_board[i] <= 0;
+        end
       end
-      frame_count <= 0;
-    end else
-      frame_count <= frame_count + 1;
-  end
+
+      neighbours <= ((not_top && not_left && prev_board[iter - BOARD_WIDTH - 1])     ? 4'b0001 : 4'b0000)
+                  + ((not_top && prev_board[iter - BOARD_WIDTH])                     ? 4'b0001 : 4'b0000)
+                  + ((not_top && not_right && prev_board[iter - BOARD_WIDTH + 1])    ? 4'b0001 : 4'b0000)
+                  + ((not_left && prev_board[iter - 1])                              ? 4'b0001 : 4'b0000)
+                  + ((not_right && prev_board[iter + 1])                             ? 4'b0001 : 4'b0000)
+                  + ((not_bottom && not_left && prev_board[iter + BOARD_WIDTH - 1])  ? 4'b0001 : 4'b0000)
+                  + ((not_bottom && prev_board[iter + BOARD_WIDTH])                  ? 4'b0001 : 4'b0000)
+                  + ((not_bottom && not_right && prev_board[iter + BOARD_WIDTH + 1]) ? 4'b0001 : 4'b0000);
+
+      i <= i + 1;
+      if (i == 63) begin
+        bg_tracker <= bg_tracker + 1;
+        vga_source <= ~vga_source;
+      end
+    end
+	end
 
 endmodule
