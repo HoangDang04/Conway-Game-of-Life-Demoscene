@@ -94,7 +94,7 @@ module tt_um_example (
 														              2'b00;
 
 //======================= LOGIC ================================//
-	reg [BIT_WIDTH + BIT_HEIGHT - 1:0] i;
+  reg [BIT_WIDTH + BIT_HEIGHT - 1:0] i;
   reg [3:0] neighbours;
 
   wire [BIT_WIDTH + BIT_HEIGHT - 1:0] iter = (vga_source == 1 && i < 63) ? i + 1 : 6'b0;
