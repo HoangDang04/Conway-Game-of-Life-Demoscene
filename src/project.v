@@ -43,7 +43,6 @@ module tt_um_example (
       .reset(~rst_n)
   );
 
-
   // =============REGISTER SIZE OF THE BOARD=================//
   localparam BIT_WIDTH = 3, BIT_HEIGHT = 3;
   localparam BOARD_WIDTH = 2 ** BIT_WIDTH;
@@ -65,14 +64,14 @@ module tt_um_example (
                   (vpos >= BACKGROUND_HEIGHT/2);
   wire visible = (hpos < 640) && (vpos < 480);
   // Assign which cell this pixel belongs to
-  wire [9 : 0] row_index = (hpos - BACKGROUND_WIDTH/2) / CELL_SIZE;
-  wire [9 : 0] column_index = (vpos - BACKGROUND_HEIGHT/2) / CELL_SIZE;
+  wire [9:0] row_index = (hpos - BACKGROUND_WIDTH/2) / CELL_SIZE;
+  wire [9:0] column_index = (vpos - BACKGROUND_HEIGHT/2) / CELL_SIZE;
 
   reg vga_source;
   wire vga_value = vga_source ? prev_board[location[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] :
                                 curr_board[location[BIT_WIDTH + BIT_HEIGHT - 1 : 0]];
   // Compute location of the cell on the board
-  wire [9 : 0] location = (column_index * BOARD_WIDTH) + row_index;
+  wire [9:0] location = (column_index * BOARD_WIDTH) + row_index;
   wire _unused_location = &location[9:6];
 
   wire [1:0] h_slice = hpos[6:5];
@@ -95,10 +94,10 @@ module tt_um_example (
 														              2'b00;
 
 //======================= LOGIC ================================//
-	reg [BIT_WIDTH + BIT_HEIGHT : 0] i;
+	reg [BIT_WIDTH + BIT_HEIGHT - 1:0] i;
   reg [3:0] neighbours;
 
-  wire [BIT_WIDTH + BIT_HEIGHT - 1 : 0] iter = (vga_source == 1 && i < 63) ? i[BIT_WIDTH + BIT_HEIGHT - 1 : 0] + 1 : 6'b0;
+  wire [BIT_WIDTH + BIT_HEIGHT - 1:0] iter = (vga_source == 1 && i < 63) ? i + 1 : 6'b0;
 
   wire not_top    = (iter > BOARD_WIDTH - 1);
   wire not_bottom = (iter < BOARD_WIDTH * (BOARD_HEIGHT - 1));
@@ -180,18 +179,18 @@ module tt_um_example (
       i <= 0;
     end else if (run == 1) begin
       if (vga_source == 0) begin
-          prev_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] <= curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]];
+          prev_board[i] <= curr_board[i];
       end else begin
-        if (prev_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] == 1) begin
+        if (prev_board[i] == 1) begin
           if (neighbours == 2 || neighbours == 3)
-            curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] <= 1;
+            curr_board[i] <= 1;
           else
-            curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] <= 0;
+            curr_board[i] <= 0;
         end else begin
           if (neighbours == 3)
-            curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] <= 1;
+            curr_board[i] <= 1;
           else
-            curr_board[i[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] <= 0;
+            curr_board[i] <= 0;
         end
       end
 
@@ -204,12 +203,11 @@ module tt_um_example (
                   + ((not_bottom && prev_board[iter + BOARD_WIDTH])                  ? 4'b0001 : 4'b0000)
                   + ((not_bottom && not_right && prev_board[iter + BOARD_WIDTH + 1]) ? 4'b0001 : 4'b0000);
 
+      i <= i + 1;
       if (i == 63) begin
         bg_tracker <= bg_tracker + 1;
-        i <= 0;
         vga_source <= ~vga_source;
-      end else
-        i <= i + 1;
+      end
     end
 	end
 
