@@ -75,8 +75,10 @@ module tt_um_example (
   wire [9 : 0] location = (column_index * BOARD_WIDTH) + row_index;
   wire _unused_location = &location[9:6];
 
+  wire [1:0] h_slice = hpos[6:5];
+  wire [1:0] v_slice = vpos[6:5];
   reg [1:0] bg_tracker;
-  wire [1:0] blue_bg = (hpos[6:5] + vpos[6:5] + bg_tracker);
+  wire [1:0] blue_bg = h_slice + v_slice + bg_tracker;
 
   // Generate RGB signals for the board
 	assign R =	(boundary && vga_value)  ? 	2'b11 :
