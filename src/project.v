@@ -22,8 +22,7 @@ module tt_um_example (
   wire [9:0] hpos, vpos;
   
   // Start/ Stop simulations
-  wire run = ~ui_in[0];    // This only works when you hit ui_in
-  wire reset = ~ui_in[1];
+  wire run = ui_in[0];    // Stops when you hit ui_in[0]
 
   // assign output
   assign uo_out = {hsync, B[0], G[0], R[0], vsync, B[1], G[1], R[1]};
@@ -77,16 +76,16 @@ module tt_um_example (
   wire [1:0] h_slice = hpos[6:5];
   wire [1:0] v_slice = vpos[6:5];
   reg [1:0] bg_tracker;
-  wire [1:0] blue_bg = h_slice + v_slice + bg_tracker;
+  wire [1:0] background = h_slice + v_slice + bg_tracker;
 
   // Generate RGB signals for the board
 	assign R =	(boundary && vga_value)  ? 	2'b10 :
 				      (boundary && !vga_value) ? 	2'b11 :
-        	   	visible                  ? 	blue_bg :
+        	   	visible                  ? 	background :
 														              2'b00;
 	assign G =	(boundary && vga_value)  ? 	2'b00 :
 				      (boundary && !vga_value) ? 	2'b10 :
-        		  visible                  ? 	blue_bg :
+        		  visible                  ? 	background :
 														              2'b00;
 	assign B =	(boundary && vga_value)  ?  2'b10 :
 				      (boundary && !vga_value) ? 	2'b11 :
@@ -105,7 +104,7 @@ module tt_um_example (
   wire not_right  = ((iter + 1) % BOARD_WIDTH != 0);
 
 	always @(posedge vsync) begin
-		if(reset == 0) begin
+		if(rst_n == 0) begin
       curr_board[1] <= 0;
       curr_board[2] <= 0;
       curr_board[4] <= 0;
@@ -177,7 +176,7 @@ module tt_um_example (
 
       vga_source <= 0;
       i <= 0;
-    end else if (run == 1) begin
+    end else if (run == 0) begin
       if (vga_source == 0) begin
           prev_board[i] <= curr_board[i];
       end else begin
