@@ -80,17 +80,17 @@ module tt_um_example (
   wire [1:0] blue_bg = h_slice + v_slice + bg_tracker;
 
   // Generate RGB signals for the board
-	assign R =	(boundary && vga_value)  ? 	2'b11 :
+	assign R =	(boundary && vga_value)  ? 	2'b10 :
 				      (boundary && !vga_value) ? 	2'b11 :
-        	   	visible                  ? 	2'b00 :
+        	   	visible                  ? 	blue_bg :
 														              2'b00;
-	assign G =	(boundary && vga_value)  ? 	2'b01 :
-				      (boundary && !vga_value) ? 	2'b11 :
-        		  visible                  ? 	2'b00 :
-														              2'b00;
-	assign B =	(boundary && vga_value)  ?  2'b00 :
-				      (boundary && !vga_value) ? 	2'b11 :
+	assign G =	(boundary && vga_value)  ? 	2'b00 :
+				      (boundary && !vga_value) ? 	2'b10 :
         		  visible                  ? 	blue_bg :
+														              2'b00;
+	assign B =	(boundary && vga_value)  ?  2'b10 :
+				      (boundary && !vga_value) ? 	2'b11 :
+        		  visible                  ? 	2'b01 :
 														              2'b00;
 
 //======================= LOGIC ================================//
