@@ -31,7 +31,7 @@ module tt_um_example (
   assign uio_out = 0;
   assign uio_oe = 0;
 
-  wire _unused = &{ena, clk, 1'b0, ui_in[7:2], uio_in};
+  wire _unused = &{ena, clk, 1'b0, ui_in[7:1], uio_in};
 
   vga_sync vga_synchronize(
       .hsync(hsync),
