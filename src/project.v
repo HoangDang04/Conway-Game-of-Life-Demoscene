@@ -23,6 +23,7 @@ module tt_um_game_of_life (
   
   // Start/ Stop simulations
   wire run = ui_in[0];    // Stops when you hit ui_in[0]
+  wire reset = ui_in[1];  // Reset when you hit ui_in[1]
 
   // assign output
   assign uo_out = {hsync, B[0], G[0], R[0], vsync, B[1], G[1], R[1]};
@@ -119,7 +120,7 @@ module tt_um_game_of_life (
   // Updates occur on vsync edge.
   always @(posedge vsync) begin
     // Synchronous rest. Resets UW pattern.
-    if(rst_n == 0) begin
+    if(reset == 1) begin
       curr_board[1] <= 0;
       curr_board[2] <= 0;
       curr_board[4] <= 0;
