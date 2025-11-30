@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2024 Your Name
+ * Copyright (c) 2024 Hoang Dang, Adam Spyridakis
  * SPDX-License-Identifier: Apache-2.0
  */
 
 `default_nettype none
 
-module tt_um_example (
+module game_of_life_demoscene (
   input  wire [7:0] ui_in,    // Dedicated inputs
   output wire [7:0] uo_out,   // Dedicated outputs
   input  wire [7:0] uio_in,   // IOs: Input path
@@ -42,69 +42,84 @@ module tt_um_example (
       .reset(~rst_n)
   );
 
-  // =============REGISTER SIZE OF THE BOARD=================//
+  //=============REGISTER SIZE OF THE BOARD=================//
+  // Bits needed to represent board height and width
   localparam BIT_WIDTH = 3, BIT_HEIGHT = 3;
+  // Actual board width and height
   localparam BOARD_WIDTH = 2 ** BIT_WIDTH;
   localparam BOARD_HEIGHT = 2 ** BIT_HEIGHT;
+  // Total number of cells
   localparam SIZE = BOARD_WIDTH * BOARD_HEIGHT;
   
+  // Pixel width/height of an individual cell.
   localparam CELL_SIZE = 50;
-  localparam BACKGROUND_HEIGHT = 480 - (CELL_SIZE * BOARD_HEIGHT);     // how much left of BIT_HEIGHT in the background
-  localparam BACKGROUND_WIDTH = 640 - (CELL_SIZE * BOARD_WIDTH);    // how much left of BIT_WIDTH in the background
-
+  // Area not present in the "board", background area.
+  localparam BACKGROUND_HEIGHT = 480 - (CELL_SIZE * BOARD_HEIGHT);
+  localparam BACKGROUND_WIDTH = 640 - (CELL_SIZE * BOARD_WIDTH);
+  
+  //==================OTHER WIRE REGISTERS=====================//
+  // Registers representing the current and previous state of the board.
   reg curr_board [0:SIZE-1];
   reg prev_board [0:SIZE-1];
-  
-  //==================OTHER WIRE REGISTERS=====================//                                        
-  //Checking the region belongs to 640 x 480 board or not, boundary works as a boolean
+
+  // Check whether the region belongs to board of cells or not.
   wire boundary = (hpos < 640 - BACKGROUND_WIDTH/2) &&
                   (hpos >= BACKGROUND_WIDTH/2) &&
                   (vpos < 480 - BACKGROUND_HEIGHT/2) &&
                   (vpos >= BACKGROUND_HEIGHT/2);
+  // Wire to verify we are not in a VGA blanking period.
   wire visible = (hpos < 640) && (vpos < 480);
-  // Assign which cell this pixel belongs to
+  // Determine which cell this pixel belongs to.
   wire [9:0] row_index = (hpos - BACKGROUND_WIDTH/2) / CELL_SIZE;
   wire [9:0] column_index = (vpos - BACKGROUND_HEIGHT/2) / CELL_SIZE;
 
+  // Register representing whether we are currently displaying curr_board or prev_board.
   reg vga_source;
   wire vga_value = vga_source ? prev_board[location[BIT_WIDTH + BIT_HEIGHT - 1 : 0]] :
                                 curr_board[location[BIT_WIDTH + BIT_HEIGHT - 1 : 0]];
-  // Compute location of the cell on the board
+  // Compute location of the cell on the board - need extra bits to appease linter.
   wire [9:0] location = (column_index * BOARD_WIDTH) + row_index;
   wire _unused_location = &location[9:6];
 
+  // Generate background colours based on horizontal and vertical position.
   wire [1:0] h_slice = hpos[6:5];
   wire [1:0] v_slice = vpos[6:5];
   reg [1:0] bg_tracker;
   wire [1:0] background = h_slice + v_slice + bg_tracker;
 
-  // Generate RGB signals for the board
-	assign R =	(boundary && vga_value)  ? 	2'b10 :
-				      (boundary && !vga_value) ? 	2'b11 :
-        	   	visible                  ? 	background :
-														              2'b00;
-	assign G =	(boundary && vga_value)  ? 	2'b00 :
-				      (boundary && !vga_value) ? 	2'b10 :
-        		  visible                  ? 	background :
-														              2'b00;
-	assign B =	(boundary && vga_value)  ?  2'b10 :
-				      (boundary && !vga_value) ? 	2'b11 :
-        		  visible                  ? 	2'b01 :
-														              2'b00;
+  // Generate RGB signals for the board.
+  assign R =  (boundary && vga_value)  ?  2'b10 :
+              (boundary && !vga_value) ?  2'b11 :
+               visible                 ?  background :
+                                          2'b00;
+  assign G =  (boundary && vga_value)  ?  2'b00 :
+              (boundary && !vga_value) ?  2'b10 :
+              visible                  ?  background :
+                                          2'b00;
+  assign B =  (boundary && vga_value)  ?  2'b10 :
+              (boundary && !vga_value) ?  2'b11 :
+              visible                  ?  2'b01 :
+                                          2'b00;
 
 //======================= LOGIC ================================//
+  // Iterator responsible for updating curr_board and prev_board.
   reg [BIT_WIDTH + BIT_HEIGHT - 1:0] i;
+  // Register keeping track of alive neighbours for each cell.
   reg [3:0] neighbours;
 
+  // Iterator which is 1 ahead of i to compute neighbours one clock cycle in advance.
   wire [BIT_WIDTH + BIT_HEIGHT - 1:0] iter = (vga_source == 1 && i < 63) ? i + 1 : 6'b0;
 
+  // Whether a cell is a neighbour depends on where it is in the grid.
   wire not_top    = (iter > BOARD_WIDTH - 1);
   wire not_bottom = (iter < BOARD_WIDTH * (BOARD_HEIGHT - 1));
   wire not_left   = (iter % BOARD_WIDTH != 0);
   wire not_right  = ((iter + 1) % BOARD_WIDTH != 0);
 
-	always @(posedge vsync) begin
-		if(rst_n == 0) begin
+  // Updates occur on vsync edge.
+  always @(posedge vsync) begin
+    // Synchronous rest. Resets UW pattern.
+    if(rst_n == 0) begin
       curr_board[1] <= 0;
       curr_board[2] <= 0;
       curr_board[4] <= 0;
@@ -177,8 +192,10 @@ module tt_um_example (
       vga_source <= 0;
       i <= 0;
     end else if (run == 0) begin
+      // Stage 1: output curr_board while updating prev_board. Copy curr_board into prev_board.
       if (vga_source == 0) begin
           prev_board[i] <= curr_board[i];
+      // Stage 2: output prev_board while using prev_board to compute and update curr_board.
       end else begin
         if (prev_board[i] == 1) begin
           if (neighbours == 2 || neighbours == 3)
@@ -193,6 +210,7 @@ module tt_um_example (
         end
       end
 
+      // Compute alive neighbours.
       neighbours <= ((not_top && not_left && prev_board[iter - BOARD_WIDTH - 1])     ? 4'b0001 : 4'b0000)
                   + ((not_top && prev_board[iter - BOARD_WIDTH])                     ? 4'b0001 : 4'b0000)
                   + ((not_top && not_right && prev_board[iter - BOARD_WIDTH + 1])    ? 4'b0001 : 4'b0000)
@@ -208,6 +226,6 @@ module tt_um_example (
         vga_source <= ~vga_source;
       end
     end
-	end
+  end
 
 endmodule
