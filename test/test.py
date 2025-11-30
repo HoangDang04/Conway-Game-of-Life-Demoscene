@@ -29,7 +29,7 @@ async def vga_horizontal_test(dut):
 
     dut._log.info("Test horizontal sync")
     # Pixel generation region
-    await ClockCycles(dut.clk, 640)
+    await ClockCycles(dut.clk, 641)
 
     # Front porch
     dut._log.info("front porch")
