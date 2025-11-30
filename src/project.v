@@ -32,7 +32,7 @@ module tt_um_vga_example (
   assign uio_out = 0;
   assign uio_oe = 0;
 
-  wire _unused = &{ena, clk, 1'b0, ui_in[7:1], uio_in};
+  wire _unused = &{ena, clk, 1'b0, ui_in[7:2], uio_in, location[9:6]};
 
   wire video_active;
   hvsync_generator hvsync_gen(
@@ -82,7 +82,6 @@ module tt_um_vga_example (
                                 curr_board[location[BIT_WIDTH + BIT_HEIGHT - 1 : 0]];
   // Compute location of the cell on the board - need extra bits to appease linter.
   wire [9:0] location = (column_index * BOARD_WIDTH) + row_index;
-  wire _unused_location = &location[9:6];
 
   // Generate background colours based on horizontal and vertical position.
   wire [1:0] h_slice = hpos[6:5];
