@@ -5,24 +5,43 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles
 
-@cocotb.test()
-async def test_project(dut):
+async def setup_test(dut):
     dut._log.info("Start")
+    dut.ena.value = 1
+    dut.rst_n.value = 1
+    dut.ui_in.value = 0
+    dut.uo_out.value = 0
+    dut.uio_in.value = 0
 
-    # Set the clock period to 10 us (100 KHz)
-    clock = Clock(dut.clk, 10, units="us")
+    # Set the clock period to 1 ns (100 MHz)
+    clock = Clock(dut.clk, 10, units="ns")
     cocotb.start_soon(clock.start())
 
     # Reset
     dut._log.info("Reset")
-    dut.ena.value = 1
-    dut.ui_in.value = 0
-    dut.uio_in.value = 0
     dut.rst_n.value = 0
     await ClockCycles(dut.clk, 10)
     dut.rst_n.value = 1
 
-    dut._log.info("Passed")
+@cocotb.test()
+async def vga_horizontal_test(dut):
+    await setup_test(dut)
 
-    # Keep testing the module by changing the input values, waiting for
-    # one or more clock cycles, and asserting the expected output values.
+    dut._log.info("Test horizontal sync")
+    # Pixel generation region
+    await ClockCycles(dut.clk, 640)
+
+    # Front porch
+    for i in range(16) :
+        assert dut.uo_out.value == 0
+        await ClockCycles(dut.clk, 1)
+
+    # HSync 
+    for i in range(96) :
+        assert dut.uo_out.value == 128
+        await ClockCycles(dut.clk, 1)
+
+    # Back porch
+    for i in range(48) :
+        assert dut.uo_out.value == 0
+        await ClockCycles(dut.clk, 1)
