@@ -32,16 +32,19 @@ async def vga_horizontal_test(dut):
     await ClockCycles(dut.clk, 640)
 
     # Front porch
+    dut._log.info("front porch")
     for i in range(16) :
-        assert dut.uo_out.value == 0
         await ClockCycles(dut.clk, 1)
+        assert dut.uo_out.value == 0
 
     # HSync 
+    dut._log.info("hsync")
     for i in range(96) :
-        assert dut.uo_out.value == 128
         await ClockCycles(dut.clk, 1)
+        assert dut.uo_out.value == 128
 
     # Back porch
+    dut._log.info("back porch")
     for i in range(48) :
-        assert dut.uo_out.value == 0
         await ClockCycles(dut.clk, 1)
+        assert dut.uo_out.value == 0
