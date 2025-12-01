@@ -4,8 +4,6 @@
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles
-from cocotb.triggers import ReadOnly
-from cocotb.triggers import FallingEdge
 
 async def setup_test(dut):
     dut._log.info("Start")
@@ -51,29 +49,29 @@ async def vga_horizontal_sync_test(dut):
         await ClockCycles(dut.clk, 1)
         assert dut.uo_out.value == 0, f"Back porch failed on pixel {i} with value {dut.uo_out.value}."
 
-# @cocotb.test()
-# async def vga_vertical_test(dut):
-#     await setup_test(dut)
+@cocotb.test()
+async def vga_vertical_sync_test(dut):
+    await setup_test(dut)
 
-#     dut._log.info("Test horizontal sync")
+    dut._log.info("Test horizontal sync")
 
-#     # Pixel generation region
-#     await ClockCycles(dut.clk, 640 * 480)
+    # Pixel generation region
+    await ClockCycles(dut.clk, 800 * 480)
 
-#     # Front porch
-#     dut._log.info("front porch")
-#     for i in range(16) :
-#         await ClockCycles(dut.clk, 1)
-#         assert dut.uo_out.value == 0
+    # Front porch
+    dut._log.info("front porch")
+    for i in range(800 * 10) :
+        await ClockCycles(dut.clk, 1)
+        assert dut.uo_out.value & 0b01111111 == 0, f"Back porch failed on pixel {i} with value {dut.uo_out.value}."
 
-#     # HSync 
-#     dut._log.info("hsync")
-#     for i in range(96) :
-#         await ClockCycles(dut.clk, 1)
-#         dut._log.info(dut.uo_out.value)
+    # VSync 
+    dut._log.info("vsync")
+    for i in range(800 * 2) :
+        await ClockCycles(dut.clk, 1)
+        assert dut.uo_out.value & 0b01111111 == 8, f"VSync failed on pixel {i} with value {dut.uo_out.value}."
 
-#     # Back porch
-#     dut._log.info("back porch")
-#     for i in range(47) :
-#         await ClockCycles(dut.clk, 1)
-#         assert dut.uo_out.value == 0
+    # Back porch
+    dut._log.info("back porch")
+    for i in range(800 * 32) :
+        await ClockCycles(dut.clk, 1)
+        assert dut.uo_out.value & 0b01111111 == 0, f"Back porch failed on pixel {i} with value {dut.uo_out.value}."
