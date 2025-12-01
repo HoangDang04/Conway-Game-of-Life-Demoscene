@@ -22,7 +22,7 @@ module vga_sync (
     // Each positive clock edge represents a pixel (see clock timing calculations in design doc).
     always @(posedge clk) begin
         // If the hpos is in the sync window, pulse the hsync.
-        hsync <= (hpos >= HSyncBegin && hpos <= HsyncEnd);
+        hsync <= (hpos >= HSyncBegin && hpos <= HsyncEnd) ? 1 : 0;
         // If reset was pressed or we are at the end of a line, reset the horizontal position.
         if (reset || hpos == HTotal) begin
             hpos <= 0;
@@ -34,7 +34,7 @@ module vga_sync (
 
     always @(posedge clk) begin
         // If the vpos is in the sync window, pulse the hsync.
-        vsync <= (vpos >= VSyncBegin && vpos <= VSyncEnd);
+        vsync <= (vpos >= VSyncBegin && vpos <= VSyncEnd) ? 1 : 0;
         // If reset was pressed or we are at the final pixel, reset the vertical line position.
         if (reset || (vpos == VTotal && hpos == HTotal)) begin
             vpos <= 0;
