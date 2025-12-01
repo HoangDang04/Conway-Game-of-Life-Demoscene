@@ -72,6 +72,6 @@ async def vga_vertical_sync_test(dut):
 
     # Back porch
     dut._log.info("back porch")
-    for i in range(800 * 32) :
+    for i in range(800 * 33 - 1) :
         await ClockCycles(dut.clk, 1)
         assert dut.uo_out.value & 0b01111111 == 0, f"Back porch failed on pixel {i} with value {dut.uo_out.value}."
