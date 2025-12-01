@@ -24,7 +24,7 @@ module vga_sync (
         // If the hpos is in the sync window, pulse the hsync.
         hsync <= (hpos >= HSyncBegin && hpos <= HsyncEnd);
         // If reset was pressed or we are at the end of a line, reset the horizontal position.
-        if (!reset || hpos == HTotal) begin
+        if (reset || hpos == HTotal) begin
             hpos <= 0;
         // Otherwise increment the pixel position.
         end else begin
@@ -36,7 +36,7 @@ module vga_sync (
         // If the vpos is in the sync window, pulse the hsync.
         vsync <= (vpos >= VSyncBegin && vpos <= VSyncEnd);
         // If reset was pressed or we are at the final pixel, reset the vertical line position.
-        if (!reset || (vpos == VTotal && hpos == HTotal)) begin
+        if (reset || (vpos == VTotal && hpos == HTotal)) begin
             vpos <= 0;
         // If we are at the end of a line, increment the vertical line position
         end else if (hpos == HTotal) begin
