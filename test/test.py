@@ -25,7 +25,7 @@ async def setup_test(dut):
     await ClockCycles(dut.clk, 1)
 
 @cocotb.test()
-async def vga_horizontal_test(dut):
+async def vga_horizontal_sync_test(dut):
     await setup_test(dut)
 
     dut._log.info("Test horizontal sync")
@@ -37,16 +37,43 @@ async def vga_horizontal_test(dut):
     dut._log.info("front porch")
     for i in range(16) :
         await ClockCycles(dut.clk, 1)
-        assert dut.uo_out.value == 0
+        assert dut.uo_out.value == 0, f"Front porch failed on pixel {i} with value {dut.uo_out.value}."
 
     # HSync 
     dut._log.info("hsync")
     for i in range(96) :
         await ClockCycles(dut.clk, 1)
-        dut._log.info(dut.uo_out.value)
+        assert dut.uo_out.value == 128, f"HSync failed on pixel {i} with value {dut.uo_out.value}."
 
     # Back porch
     dut._log.info("back porch")
     for i in range(47) :
         await ClockCycles(dut.clk, 1)
-        assert dut.uo_out.value == 0
+        assert dut.uo_out.value == 0, f"Back porch failed on pixel {i} with value {dut.uo_out.value}."
+
+# @cocotb.test()
+# async def vga_vertical_test(dut):
+#     await setup_test(dut)
+
+#     dut._log.info("Test horizontal sync")
+
+#     # Pixel generation region
+#     await ClockCycles(dut.clk, 640 * 480)
+
+#     # Front porch
+#     dut._log.info("front porch")
+#     for i in range(16) :
+#         await ClockCycles(dut.clk, 1)
+#         assert dut.uo_out.value == 0
+
+#     # HSync 
+#     dut._log.info("hsync")
+#     for i in range(96) :
+#         await ClockCycles(dut.clk, 1)
+#         dut._log.info(dut.uo_out.value)
+
+#     # Back porch
+#     dut._log.info("back porch")
+#     for i in range(47) :
+#         await ClockCycles(dut.clk, 1)
+#         assert dut.uo_out.value == 0
