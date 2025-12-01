@@ -29,27 +29,25 @@ async def vga_horizontal_test(dut):
     await setup_test(dut)
 
     dut._log.info("Test horizontal sync")
+
     # Pixel generation region
-    for i in range (1000) :
-        dut._log.info(dut.uo_out.value)
-        dut._log.info(dut.uio_out.value)
-        await FallingEdge(dut.clk)
+    await ClockCycles(dut.clk, 640)
 
-    # # Front porch
-    # dut._log.info("front porch")
-    # for i in range(16) :
-    #     dut._log.info(i)
-    #     await ClockCycles(dut.clk, 1)
-    #     assert dut.uo_out.value == 0
+    # Front porch
+    dut._log.info("front porch")
+    for i in range(16) :
+        dut._log.info(i)
+        await ClockCycles(dut.clk, 1)
+        assert dut.uo_out.value == 0
 
-    # # HSync 
-    # dut._log.info("hsync")
-    # for i in range(96) :
-    #     await ClockCycles(dut.clk, 1)
-    #     assert dut.uo_out.value == 128
+    # HSync 
+    dut._log.info("hsync")
+    for i in range(96) :
+        await ClockCycles(dut.clk, 1)
+        assert dut.uo_out.value == 128
 
-    # # Back porch
-    # dut._log.info("back porch")
-    # for i in range(48) :
-    #     await ClockCycles(dut.clk, 1)
-    #     assert dut.uo_out.value == 0
+    # Back porch
+    dut._log.info("back porch")
+    for i in range(48) :
+        await ClockCycles(dut.clk, 1)
+        assert dut.uo_out.value == 0
