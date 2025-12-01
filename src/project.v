@@ -29,8 +29,8 @@ module tt_um_game_of_life (
   assign uo_out = {hsync, B[0], G[0], R[0], vsync, B[1], G[1], R[1]};
 
   // Unused outputs assigned to 0
-  assign uio_out = 0;
-  assign uio_oe = 0;
+  assign uio_out = hpos[7:0];
+  assign uio_oe = 8'b11111111;
 
   wire _unused = &{ena, clk, 1'b0, ui_in[7:2], uio_in, location[9:6]};
 
