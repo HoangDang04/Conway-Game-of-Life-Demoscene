@@ -47,6 +47,6 @@ async def vga_horizontal_test(dut):
 
     # Back porch
     dut._log.info("back porch")
-    for i in range(48) :
+    for i in range(47) :
         await ClockCycles(dut.clk, 1)
         assert dut.uo_out.value == 0
