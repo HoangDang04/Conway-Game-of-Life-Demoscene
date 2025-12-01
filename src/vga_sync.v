@@ -11,7 +11,7 @@ module vga_sync (
 
     // Horizontal pixel parameters (pixel counting starts at 0)
     parameter HSyncBegin = 640 + 16; // Send a sync pulse after visible + front porch pixels.
-    parameter HsyncEnd = 64 + 16 + 96 - 1; // Continue sending sync pulse until after window.
+    parameter HsyncEnd = 640 + 16 + 96 - 1; // Continue sending sync pulse until after window.
     parameter HTotal = 640 + 16 + 96 + 48 - 1; // Reset hpos after total pixels has been reached.
 
     // Vertical line parameters (line counting starts at 0)
@@ -22,7 +22,7 @@ module vga_sync (
     // Each positive clock edge represents a pixel (see clock timing calculations in design doc).
     always @(posedge clk) begin
         // If the hpos is in the sync window, pulse the hsync.
-        hsync <= 1;
+        hsync <= (hpos >= HSyncBegin && hpos <= HsyncEnd) ? 1 : 0;
         // If reset was pressed or we are at the end of a line, reset the horizontal position.
         if (reset || hpos == HTotal) begin
             hpos <= 0;
@@ -34,7 +34,7 @@ module vga_sync (
 
     always @(posedge clk) begin
         // If the vpos is in the sync window, pulse the hsync.
-        vsync <= 1;
+        vsync <= (vpos >= VSyncBegin && vpos <= VSyncEnd) ? 1 : 0;
         // If reset was pressed or we are at the final pixel, reset the vertical line position.
         if (reset || (vpos == VTotal && hpos == HTotal)) begin
             vpos <= 0;
