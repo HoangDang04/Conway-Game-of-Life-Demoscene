@@ -22,7 +22,7 @@ async def setup_test(dut):
     dut.rst_n.value = 0
     await ClockCycles(dut.clk, 10)
     dut.rst_n.value = 1
-    await FallingEdge(dut.clk)
+    await ClockCycles(dut.clk, 2)
 
 @cocotb.test()
 async def vga_horizontal_test(dut):
@@ -36,7 +36,6 @@ async def vga_horizontal_test(dut):
     # Front porch
     dut._log.info("front porch")
     for i in range(16) :
-        dut._log.info(i)
         await ClockCycles(dut.clk, 1)
         assert dut.uo_out.value == 0
 
