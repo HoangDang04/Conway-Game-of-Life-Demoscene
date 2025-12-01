@@ -29,7 +29,8 @@ async def vga_horizontal_test(dut):
     # Pixel generation region
     for i in range (1000) :
         dut._log.info(dut.uio_out.value)
-        # dut._log.info(dut.uo_out.value)
+        if (dut.uio_out.value == 0) :
+            dut._log.info(dut.uo_out.value)
         await ClockCycles(dut.clk, 1)
 
     # # Front porch
