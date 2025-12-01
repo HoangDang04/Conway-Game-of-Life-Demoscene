@@ -20,6 +20,7 @@ async def setup_test(dut):
     dut.rst_n.value = 0
     await ClockCycles(dut.clk, 10)
     dut.rst_n.value = 1
+    await ClockCycles(dut.clk, 800)
 
 @cocotb.test()
 async def vga_horizontal_test(dut):
@@ -28,10 +29,7 @@ async def vga_horizontal_test(dut):
     dut._log.info("Test horizontal sync")
     # Pixel generation region
     for i in range (1000) :
-        dut._log.info(dut.uio_out.value)
-        if (dut.uio_out.value == 0) :
-            dut._log.info(dut.uo_out.value)
-        await ClockCycles(dut.clk, 1)
+        dut._log.info(dut.uo_out.value)
 
     # # Front porch
     # dut._log.info("front porch")
