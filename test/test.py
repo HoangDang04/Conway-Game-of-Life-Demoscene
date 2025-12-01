@@ -27,7 +27,7 @@ async def vga_horizontal_test(dut):
 
     dut._log.info("Test horizontal sync")
     # Pixel generation region
-    for i in range (800) :
+    for i in range (1000) :
         dut._log.info(dut.uio_out.value)
         # dut._log.info(dut.uo_out.value)
         await ClockCycles(dut.clk, 1)
