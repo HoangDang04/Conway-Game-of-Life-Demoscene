@@ -8,9 +8,7 @@ from cocotb.triggers import ClockCycles
 async def setup_test(dut):
     dut._log.info("Start")
     dut.ena.value = 1
-    dut.rst_n.value = 1
     dut.ui_in.value = 0
-    dut.uo_out.value = 0
     dut.uio_in.value = 0
 
     # Set the clock period to 1 ns (100 MHz)
