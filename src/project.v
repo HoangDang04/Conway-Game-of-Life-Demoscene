@@ -32,7 +32,7 @@ module tt_um_game_of_life (
   assign uio_out = 0;
   assign uio_oe = 0;
 
-  wire _unused = &{ena, clk, 1'b0, ui_in[7:2], uio_in, location[9:6]};
+  wire _unused = &{ena, clk, 1'b0, ui_in[7:2], uio_in, location[9:6], row_index[9:6], column_index[9:6]};
 
   vga_sync vga_synchronize(
       .hsync(hsync),
