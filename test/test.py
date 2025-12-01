@@ -30,6 +30,7 @@ async def vga_horizontal_test(dut):
     # Pixel generation region
     for i in range (1000) :
         dut._log.info(dut.uo_out.value)
+        dut._log.info(dut.uio_out.value)
 
     # # Front porch
     # dut._log.info("front porch")
