@@ -22,7 +22,7 @@ async def setup_test(dut):
     dut.rst_n.value = 0
     await ClockCycles(dut.clk, 10)
     dut.rst_n.value = 1
-    await ClockCycles(dut.clk, 2)
+    await ClockCycles(dut.clk, 1)
 
 @cocotb.test()
 async def vga_horizontal_test(dut):
