@@ -53,7 +53,7 @@ async def vga_horizontal_sync_test(dut):
 async def vga_vertical_sync_test(dut):
     await setup_test(dut)
 
-    dut._log.info("Test horizontal sync")
+    dut._log.info("Test vertical sync")
 
     # Pixel generation region
     await ClockCycles(dut.clk, 800 * 480)
