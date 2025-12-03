@@ -116,14 +116,10 @@ module tt_um_game_of_life (
   wire not_left   = (iter % BOARD_WIDTH != 0);
   wire not_right  = ((iter + 1) % BOARD_WIDTH != 0);
 
-  reg vsync_copy;
-  wire vsync_rise = vsync & ~vsync_copy;
-
   // Updates occur on vsync edge.
-  always @(posedge clk) begin
-    vsync_copy <= vsync;
+  always @(posedge vsync) begin
     // Synchronous rest. Resets UW pattern.
-    if(reset == 1 && vsync_rise == 1) begin
+    if(reset == 1) begin
       curr_board[1] <= 0;
       curr_board[2] <= 0;
       curr_board[4] <= 0;
@@ -195,7 +191,7 @@ module tt_um_game_of_life (
 
       vga_source <= 0;
       i <= 0;
-    end else if (run == 0 && vsync_rise == 1) begin
+    end else if (run == 0) begin
       // Stage 1: output curr_board while updating prev_board. Copy curr_board into prev_board.
       if (vga_source == 0) begin
           prev_board[i] <= curr_board[i];
