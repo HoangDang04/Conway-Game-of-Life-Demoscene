@@ -127,8 +127,7 @@ Vertical parameters are measured in lines, representing timing intervals for how
 ---
 
 ## System Diagram and Design Details
-![ECE 298A System Diagram]("https://github.com/user-attachments/assets/96e3d10f-fcb1-48af-8f0e-a66ec1475911")
-
+![ECE 298A System Diagram](https://github.com/user-attachments/assets/96e3d10f-fcb1-48af-8f0e-a66ec1475911)
 
 **VSync and HSync Module**
 The VSync and HSync module monitors the current pixel that is being output based on the clock. It provides an hpos and vpos signal to let the pixel generation module know what it should be outputting.
