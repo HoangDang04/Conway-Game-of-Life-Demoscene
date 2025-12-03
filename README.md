@@ -3,12 +3,37 @@
 # Tiny Tapeout Demoscene – Conway’s Game of Life
 
 This project implements a **Conway’s Game of Life demoscene** on a Tiny Tapeout ASIC.  
-The design uses VGA output to visualize evolving patterns seeded with **University of Waterloo-themed pixel art** and optionally produces PWM audio output.  
+The design uses VGA output to visualize evolving patterns seeded with **University of Waterloo-themed pixel art**.  
 
->  Thank you to [Tiny Tapeout](https://tinytapeout.com) for providing the framework that makes this project possible and John Long as an instructor of the course 298A.
+>  Thank you to [Tiny Tapeout](https://tinytapeout.com) for providing the framework to makes this project possible and professor John Long.
 
 # Author: Hoang Dang, Adam Spyridakis
 ---
+
+## Project Outline
+
+- **Concept**: Conway's Game of Life.
+- **Rules**:
+  - A cellular automaton where each cell has two states: alive or dead.
+  - The next state of a cell depends on the current state of its 8 neighbouring cells.
+  - Alive cell with **2 or 3 alive neighbors → stays alive**  
+  - Alive cell with **0–1 or 4–8 dead neighbors → dies**  
+  - Dead cell with **3 alive neighbors → becomes alive**  
+  - Dead cell with **0–2 or 4–8 dead neighbors → stays dead**
+  - The grid is 8x8, so the border of the grid is considered dead.
+- **Cells**: Represented as a square block of pixels.
+- **Initial State**:  
+  - Seeded with University of Waterloo pixel art.
+  - Limited by the chip area, so our grid is 8x8. Managed to draw UW using cells available.
+- **Output**:  
+  - VGA for visuals.  
+- **Testing**:
+  - Tiny Tapeout provides an emulator (https://vga-playground.com/) to validate designs before fabrication.
+  - Go to the VGAPlayground branch. Copy the project.v verilog code onto the website to view the demoscene.
+  - To test the VGA Synchronization module we have used cocotb testing framework. Go to the test README for more information.
+
+---
+
 ## Clock Speed
 
 The clock speed depends on the TinyVGA specifications, which specify a **pixel request frequency of 25.175 MHz**.
@@ -55,53 +80,33 @@ Vertical parameters are measured in lines, representing timing intervals for how
 
 25.175 MHz
 - Therefore, the VGA pixel clock frequency is approximately **25.175 MHz**.
-
----
-## Project Outline
-
-- **Concept**: A cellular automaton where each cell has two states: alive or dead.  
-- **Rules**:
-  - Alive cell with **2 or 3 neighbors → stays alive**  
-  - Alive cell with **0–1 or 4–8 neighbors → dies**  
-  - Dead cell with **3 neighbors → becomes alive**  
-  - Dead cell with **0–2 or 4–8 neighbors → stays dead**  
-- **Cells**: Represented as groups of pixels.
-- **Initial State**:  
-  - Seeded with University of Waterloo pixel art.  
-  - Optionally display a University of Waterloo watermark in the corner.
-- **Output**:  
-  - VGA for visuals.  
-  - PWM audio (optional) for sound generation.  
-- **Testing**: Tiny Tapeout provides an emulator to validate designs before fabrication.
+- We have set the clock period to **40 ns** which corresponds to **25 MHz**.
 
 ---
 ## Input/Output Mapping
 
 | Pin # | Direction | Function      |
 |-------|-----------|---------------|
-| 0     | Input     | Run (start/stop) |
-| 1     | Input     | First_state (seed image) |
+| 0     | Input     | Run (pause/play) |
+| 1     | Input     | Reset |
 | 2     | Output    | B1 |
 | 3     | Output    | VS (Vertical Sync) |
 | 4     | Output    | R0 |
 | 5     | Output    | G0 |
 | 6     | Output    | B0 |
 | 7     | Output    | HS (Horizontal Sync) |
-| –     | Output    | Audio (PWM) |
 
 ### VGA Pinout
+- **Run**: Putting a high on this input will pause the game in its current state.
+           Putting a low on this input will allow the simulation to continue.
+- **Reset**: Putting a high on this input will reset the grid to its original state.
 - **R0, R1**: Red output (MSB/LSB)  
 - **G0, G1**: Green output (MSB/LSB)  
 - **B0, B1**: Blue output (MSB/LSB)  
 - **VS**: Vertical Sync  
-- **HS**: Horizontal Sync  
+- **HS**: Horizontal Sync
 
 [VGA reference](https://github.com/mole99/tiny-vga)
-
-### Audio Pinout
-- **PWM audio output**: generates square wave frequencies mapped to notes.  
-
-[Audio reference](https://github.com/MichaelBell/tt-audio-pmod)
 
 ---
 
@@ -117,10 +122,7 @@ Vertical parameters are measured in lines, representing timing intervals for how
 - Responsibilities:
   - Seed initial University of Waterloo pixel art.  
   - Calculate next state of each cell using Conway’s Game of Life rules.
-
-### 3. Audio Signal Generation Module
-- Maps digital values to audio frequencies.  
-- Outputs PWM square waves corresponding to notes.  
+  - Also responsible for creating the background.
 
 ---
 
@@ -135,21 +137,8 @@ Vertical parameters are measured in lines, representing timing intervals for how
 
 - [Tiny Tapeout Docs](https://tinytapeout.com)  
 - [Digital design lessons](https://tinytapeout.com/digital_design/)  
-- [Siliwiz – learn semiconductors](https://tinytapeout.com/siliwiz/)  
 - [Tiny Tapeout Discord](https://tinytapeout.com/discord)
 
----
-
-## Next Steps
-
-- Implement Verilog modules and add to `src/`.  
-- Update [`info.yaml`](info.yaml) with correct top module and source files.  
-- Run simulations with the Tiny Tapeout testbench.  
-- Share results with the community under **#tinytapeout**.  
-
----
-
-## Credits
 
 - **Contributors**: Hoang Dang and Adam Spyridakis
 - **Framework**: Built on [Tiny Tapeout](https://tinytapeout.com)  
