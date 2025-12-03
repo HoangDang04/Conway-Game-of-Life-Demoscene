@@ -1,12 +1,21 @@
-# Sample testbench for a Tiny Tapeout project
+# Conway's Game of Life Tests
 
-This is a sample testbench for a Tiny Tapeout project. It uses [cocotb](https://docs.cocotb.org/en/stable/) to drive the DUT and check the outputs.
-See below to get started or for more information, check the [website](https://tinytapeout.com/hdl/testing/).
+## Viewing the demoscene
+Step 1: Go to the tiny tapeout VGA emulator (https://vga-playground.com/).
 
-## Setting up
+Step 2: Change the branch of this repository to VGAPlayground.
 
-1. Edit [Makefile](Makefile) and modify `PROJECT_SOURCES` to point to your Verilog files.
-2. Edit [tb.v](tb.v) and replace `tt_um_example` with your module name.
+Step 3: Copy the project.v code into the website.
+
+Step 4: Toggle ui_in[1] to reset the demoscene and begin the simulation!
+        The simulation can be paused by hitting ui_in[0].
+
+## Description of tests
+Testing the actual pixel output was done visually using VGA Playground.
+
+The tests are to verify that the synchronization module is sending HSync and VSync pulses at the appropriate time.
+We have one test to verify that the horizontal sync pulse occurs at the correct time, and that there is no pixel output during blanking periods.
+We have one test to verify that the vertical sync pulse occurs at the correct time, and that there is no pixel output during blanking periods.
 
 ## How to run
 
