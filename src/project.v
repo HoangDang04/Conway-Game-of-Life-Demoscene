@@ -119,11 +119,9 @@ module tt_um_game_of_life (
   reg vsync_copy;
   wire vsync_rise = vsync & ~vsync_copy;
 
-  always @(posedge clk)
-    vsync_copy <= vsync;
-
   // Updates occur on vsync edge.
   always @(posedge clk) begin
+    vsync_copy <= vsync;
     // Synchronous rest. Resets UW pattern.
     if(reset == 1 && vsync_rise == 1) begin
       curr_board[1] <= 0;
