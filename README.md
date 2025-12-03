@@ -126,8 +126,29 @@ Vertical parameters are measured in lines, representing timing intervals for how
 
 ---
 
-## System Diagram
+## System Diagram and Design Details
 ![ECE 298A System Diagram](https://github.com/user-attachments/assets/02132d53-64fa-4fdc-b78a-29559c741be2)
+
+
+---
+## Design Challenges
+1. Issues with chip space and memory.
+   Our project is very memory demanding in nature. To have a stable output and correct computation according to the rules of Conway's Game of Life we need two bit arrays.
+   Initially we were hoping to have a very large grid with a very detailed starting image, but even having registers to store the bits necessary for a 16x16 grid resulted in ~300% chip area usage.
+   When we initially designed the logic for the grid and determining what cell is currently being output to the VGA we used localparams to make the implementation general, so it was fairly quick to test
+   different grid sizes. We determined that if our implementation of the logic for the game itself was efficient enough, an 8x8 grid was feasible.
+
+   Designing an efficient method of implementing the game was a challenge as well. We learned that for loops in verilog are quite expensive when we attempted to copy over the new cell state to the old
+   cell state in one clock cycle. To resolve this we made each cell update in separate cycles.
+
+   Unfortunately this meant that we could not afford to be too creative with the background/extra space not being occupied by the grid. We had an animated goose (see Goose branch),
+   but determined that it was too space demanding to be left in.
+
+2. Learning Verilog structure and style.
+   As a team we did not have extensive experience in using hardware description languages in general. It took some time to get adjusted to the general structure and design practices.
+   Originally we tried to use a blocking update of the neighbours register. The goal was to determine the amount of live neighbours and then immediately update that cell.
+   This caused linter problems and likely synthesis concerns as blocking assignments are not supposed to be used in always blocks.
+   We had to completely rethink our approach and update the neighbours in the cycle before updating the new cell state.
 
 ---
 
