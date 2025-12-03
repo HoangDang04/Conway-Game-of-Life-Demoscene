@@ -122,116 +122,114 @@ module tt_um_game_of_life (
   // Updates occur on vsync edge.
   always @(posedge clk) begin
     vsync_copy <= vsync;
-    if (vsync_rise) begin
-      // Synchronous rest. Resets UW pattern.
-      if(reset == 1) begin
-        curr_board[1] <= 0;
-        curr_board[2] <= 0;
-        curr_board[4] <= 0;
-        curr_board[5] <= 0;
-        curr_board[6] <= 0;
-        curr_board[7] <= 0;
-        curr_board[9] <= 0;
-        curr_board[10] <= 0;
-        curr_board[12] <= 0;
-        curr_board[13] <= 0;
-        curr_board[14] <= 0;
-        curr_board[15] <= 0;
-        curr_board[17] <= 0;
-        curr_board[18] <= 0;
-        curr_board[20] <= 0;
-        curr_board[21] <= 0;
-        curr_board[22] <= 0;
-        curr_board[23] <= 0;
-        curr_board[24] <= 0;
-        curr_board[27] <= 0;
-        curr_board[28] <= 0;
-        curr_board[29] <= 0;
-        curr_board[30] <= 0;
-        curr_board[31] <= 0;
-        curr_board[32] <= 0;
-        curr_board[33] <= 0;
-        curr_board[34] <= 0;
-        curr_board[36] <= 0;
-        curr_board[37] <= 0;
-        curr_board[38] <= 0;
-        curr_board[40] <= 0;
-        curr_board[41] <= 0;
-        curr_board[42] <= 0;
-        curr_board[44] <= 0;
-        curr_board[45] <= 0;
-        curr_board[46] <= 0;
-        curr_board[48] <= 0;
-        curr_board[49] <= 0;
-        curr_board[50] <= 0;
-        curr_board[52] <= 0;
-        curr_board[54] <= 0;
-        curr_board[56] <= 0;
-        curr_board[57] <= 0;
-        curr_board[58] <= 0;
-        curr_board[59] <= 0;
-        curr_board[61] <= 0;
-        curr_board[63] <= 0;
+    // Synchronous rest. Resets UW pattern.
+    if(reset == 1 && vsync_rise == 1) begin
+      curr_board[1] <= 0;
+      curr_board[2] <= 0;
+      curr_board[4] <= 0;
+      curr_board[5] <= 0;
+      curr_board[6] <= 0;
+      curr_board[7] <= 0;
+      curr_board[9] <= 0;
+      curr_board[10] <= 0;
+      curr_board[12] <= 0;
+      curr_board[13] <= 0;
+      curr_board[14] <= 0;
+      curr_board[15] <= 0;
+      curr_board[17] <= 0;
+      curr_board[18] <= 0;
+      curr_board[20] <= 0;
+      curr_board[21] <= 0;
+      curr_board[22] <= 0;
+      curr_board[23] <= 0;
+      curr_board[24] <= 0;
+      curr_board[27] <= 0;
+      curr_board[28] <= 0;
+      curr_board[29] <= 0;
+      curr_board[30] <= 0;
+      curr_board[31] <= 0;
+      curr_board[32] <= 0;
+      curr_board[33] <= 0;
+      curr_board[34] <= 0;
+      curr_board[36] <= 0;
+      curr_board[37] <= 0;
+      curr_board[38] <= 0;
+      curr_board[40] <= 0;
+      curr_board[41] <= 0;
+      curr_board[42] <= 0;
+      curr_board[44] <= 0;
+      curr_board[45] <= 0;
+      curr_board[46] <= 0;
+      curr_board[48] <= 0;
+      curr_board[49] <= 0;
+      curr_board[50] <= 0;
+      curr_board[52] <= 0;
+      curr_board[54] <= 0;
+      curr_board[56] <= 0;
+      curr_board[57] <= 0;
+      curr_board[58] <= 0;
+      curr_board[59] <= 0;
+      curr_board[61] <= 0;
+      curr_board[63] <= 0;
 
-        // U
-        curr_board[0] <= 1;
-        curr_board[3] <= 1;
-        curr_board[8] <= 1;
-        curr_board[11] <= 1;
-        curr_board[16] <= 1;
-        curr_board[19] <= 1;
-        curr_board[25] <= 1;
-        curr_board[26] <= 1;
+      // U
+      curr_board[0] <= 1;
+      curr_board[3] <= 1;
+      curr_board[8] <= 1;
+      curr_board[11] <= 1;
+      curr_board[16] <= 1;
+      curr_board[19] <= 1;
+      curr_board[25] <= 1;
+      curr_board[26] <= 1;
 
-        // W
-        curr_board[35] <= 1;
-        curr_board[39] <= 1;
-        curr_board[43] <= 1;
-        curr_board[47] <= 1;
-        curr_board[51] <= 1;
-        curr_board[53] <= 1;
-        curr_board[55] <= 1;
-        curr_board[60] <= 1;
-        curr_board[62] <= 1;
+      // W
+      curr_board[35] <= 1;
+      curr_board[39] <= 1;
+      curr_board[43] <= 1;
+      curr_board[47] <= 1;
+      curr_board[51] <= 1;
+      curr_board[53] <= 1;
+      curr_board[55] <= 1;
+      curr_board[60] <= 1;
+      curr_board[62] <= 1;
 
-        vga_source <= 0;
-        i <= 0;
-      end else if (run == 0) begin
-        // Stage 1: output curr_board while updating prev_board. Copy curr_board into prev_board.
-        if (vga_source == 0) begin
-            prev_board[i] <= curr_board[i];
-        // Stage 2: output prev_board while using prev_board to compute and update curr_board.
+      vga_source <= 0;
+      i <= 0;
+    end else if (run == 0 && vsync_rise == 1) begin
+      // Stage 1: output curr_board while updating prev_board. Copy curr_board into prev_board.
+      if (vga_source == 0) begin
+          prev_board[i] <= curr_board[i];
+      // Stage 2: output prev_board while using prev_board to compute and update curr_board.
+      end else begin
+        if (prev_board[i] == 1) begin
+          if (neighbours == 2 || neighbours == 3)
+            curr_board[i] <= 1;
+          else
+            curr_board[i] <= 0;
         end else begin
-          if (prev_board[i] == 1) begin
-            if (neighbours == 2 || neighbours == 3)
-              curr_board[i] <= 1;
-            else
-              curr_board[i] <= 0;
-          end else begin
-            if (neighbours == 3)
-              curr_board[i] <= 1;
-            else
-              curr_board[i] <= 0;
-          end
-        end
-
-        // Compute alive neighbours.
-        neighbours <= ((not_top && not_left && prev_board[iter - BOARD_WIDTH - 1])     ? 4'b0001 : 4'b0000)
-                    + ((not_top && prev_board[iter - BOARD_WIDTH])                     ? 4'b0001 : 4'b0000)
-                    + ((not_top && not_right && prev_board[iter - BOARD_WIDTH + 1])    ? 4'b0001 : 4'b0000)
-                    + ((not_left && prev_board[iter - 1])                              ? 4'b0001 : 4'b0000)
-                    + ((not_right && prev_board[iter + 1])                             ? 4'b0001 : 4'b0000)
-                    + ((not_bottom && not_left && prev_board[iter + BOARD_WIDTH - 1])  ? 4'b0001 : 4'b0000)
-                    + ((not_bottom && prev_board[iter + BOARD_WIDTH])                  ? 4'b0001 : 4'b0000)
-                    + ((not_bottom && not_right && prev_board[iter + BOARD_WIDTH + 1]) ? 4'b0001 : 4'b0000);
-
-        i <= i + 1;
-        if (i == 63) begin
-          bg_tracker <= bg_tracker + 1;
-          vga_source <= ~vga_source;
+          if (neighbours == 3)
+            curr_board[i] <= 1;
+          else
+            curr_board[i] <= 0;
         end
       end
-  end
+
+      // Compute alive neighbours.
+      neighbours <= ((not_top && not_left && prev_board[iter - BOARD_WIDTH - 1])     ? 4'b0001 : 4'b0000)
+                  + ((not_top && prev_board[iter - BOARD_WIDTH])                     ? 4'b0001 : 4'b0000)
+                  + ((not_top && not_right && prev_board[iter - BOARD_WIDTH + 1])    ? 4'b0001 : 4'b0000)
+                  + ((not_left && prev_board[iter - 1])                              ? 4'b0001 : 4'b0000)
+                  + ((not_right && prev_board[iter + 1])                             ? 4'b0001 : 4'b0000)
+                  + ((not_bottom && not_left && prev_board[iter + BOARD_WIDTH - 1])  ? 4'b0001 : 4'b0000)
+                  + ((not_bottom && prev_board[iter + BOARD_WIDTH])                  ? 4'b0001 : 4'b0000)
+                  + ((not_bottom && not_right && prev_board[iter + BOARD_WIDTH + 1]) ? 4'b0001 : 4'b0000);
+
+      i <= i + 1;
+      if (i == 63) begin
+        bg_tracker <= bg_tracker + 1;
+        vga_source <= ~vga_source;
+      end
+    end
   end
 
 endmodule
