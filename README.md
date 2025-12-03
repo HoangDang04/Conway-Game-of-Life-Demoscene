@@ -127,7 +127,7 @@ Vertical parameters are measured in lines, representing timing intervals for how
 ---
 
 ## System Diagram
-![ECE 298A System Diagram Draft 1](https://github.com/user-attachments/assets/796f0081-6eca-4210-87d5-ed47a9466dca)
+![ECE 298A System Diagram](https://github.com/user-attachments/assets/02132d53-64fa-4fdc-b78a-29559c741be2)
 
 ---
 
