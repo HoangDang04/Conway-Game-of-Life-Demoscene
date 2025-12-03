@@ -23,7 +23,7 @@ The design uses VGA output to visualize evolving patterns seeded with **Universi
   - The grid is 8x8, so the border of the grid is considered dead.
 - **Cells**: Represented as a square block of pixels.
 - **Initial State**:  
-  - Seeded with University of Waterloo pixel art.
+  - Hardcoded with University of Waterloo pixel art.
   - Limited by the chip area, so our grid is 8x8. Managed to draw UW using cells available.
 - **Output**:  
   - VGA for visuals.  
