@@ -186,7 +186,7 @@ Test 1: Verification of HSync pulse
 We expect to see the horizontal front proch when hpos has a value of 640, such that it output 640 visible pixels prior (0-639 inclusive).
 Looking at the waveform below, the front porch occurs at a hex value of 280, lasts for 16 cycles and then puts a one on uo_out[7] (80 in hex). This value is expected during a HSync pulse.
 The HSync pulse lasts for 96 cycles, and then we see a value of 00 for 48 cycles.
-![HSync Test](https://github.com/user-attachments/assets/401ac095-6252-4c95-acbb-2a88a4a16b9c)
+![HSync Test](https://github.com/user-attachments/assets/36f091c4-b080-4bab-955a-b4896bb6c7cf)
 
 Test 2: Verification of VSync pulse
 We expect to see the vertical front proch when vpos has a value of 480, such that it output 480 visible lines prior (0-479 inclusive).
