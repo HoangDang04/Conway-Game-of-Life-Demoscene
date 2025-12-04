@@ -89,6 +89,8 @@ Vertical parameters are measured in lines, representing timing intervals for how
 |-------|-----------|---------------|
 | 0     | Input     | Run (pause/play) |
 | 1     | Input     | Reset |
+| 0     | Output    | R1 |
+| 1     | Output    | G1 |
 | 2     | Output    | B1 |
 | 3     | Output    | VS (Vertical Sync) |
 | 4     | Output    | R0 |
