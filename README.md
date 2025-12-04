@@ -193,7 +193,7 @@ We expect to see the vertical front proch when vpos has a value of 480, such tha
 Looking at the waveform below, the front porch occurs at a hex value of 1e0, lasts for 10 lines and then puts a one on uo_out[3] (08 in hex). This value is expected during a VSync pulse.
 The VSync pulse lasts for 2 lines, and then we see a value of 00 for 34 lines.
 The values are interrupted with 80/88 for the HSync pulse that occurs each line. In the tests this value is masked out since we already tested it in test 1.
-![VSync Test](https://github.com/user-attachments/assets/b49525ba-8cce-4958-bad6-d97620bf0545)
+![VSync Test](https://github.com/user-attachments/assets/bbe0446c-3636-499e-96b7-59db2ea81965)
 
 ---
 
