@@ -175,13 +175,9 @@ The comments are fairly detailed, so refer to them for more specific implementat
 
 ## Testing
 **Viewing the Demoscene**
-
 Step 1: Go to the tiny tapeout VGA emulator (https://vga-playground.com/).
-
 Step 2: Change the branch of this repository to VGAPlayground.
-
 Step 3: Copy the project.v code into the website.
-
 Step 4: Toggle ui_in[1] to reset the demoscene and begin the simulation!
         The simulation can be paused by hitting ui_in[0].
 
