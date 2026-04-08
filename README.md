@@ -2,7 +2,7 @@
 
 # Tiny Tapeout Demoscene – Conway’s Game of Life
 
-This project implements a **Conway’s Game of Life demoscene** on a Tiny Tapeout ASIC.  
+This project implements a **Conway’s Game of Life demoscene** on a Tiny Tapeout ASIC.
 The design uses VGA output to visualize evolving patterns seeded with **University of Waterloo-themed pixel art**.  
 
 >  Thank you to [Tiny Tapeout](https://tinytapeout.com) for providing the framework to makes this project possible and professor John Long.
